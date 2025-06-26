@@ -5,20 +5,50 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cesta de Frutas</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
     <div id="start-screen">
         <h1>Cesta de Frutas</h1>
-        <p>Pegue o máximo de frutas que puder!</p>
+        <p>Pegue o máximo de frutas que conseguir!</p>
+
+        <div class="start-decoration">
+            <div class="start-fruit start-apple"></div>
+            <div class="start-fruit start-banana"></div>
+            <div class="start-fruit start-grapes"></div>
+            <div class="start-fruit start-pear"></div>
+            <div class="start-fruit start-watermelon"></div>
+            <div class="start-basket"></div>
+        </div>
         <button id="start-button">Iniciar Jogo</button>
     </div>
 
     <div id="game-container" class="hidden">
+        <div class="grass"></div>
+
+        <div class="tree tree-left"><div class="trunk"></div><div class="leaves"></div></div>
+        <div class="tree tree-right"><div class="trunk"></div><div class="leaves"></div></div>
+
+        <div id="flowers-container"></div>
+
+        <div class="bird bird-1"></div>
+        <div class="bird bird-2"></div>
+        <div class="bird bird-3"></div>
+
+        <div class="rabbit rabbit-1"></div>
+        <div class="rabbit rabbit-2"></div>
+
+        <div class="cloud cloud-1 small"></div>
+        <div class="cloud cloud-2 medium"></div>
+        <div class="cloud cloud-3 small"></div>
+
+        <div class="stream"></div>
         <div id="basket"></div>
         <div id="score">Pontos: 0</div>
         <div id="level">Nível: 1</div>
         <div id="missed-fruits">Perdidas: 0/10</div>
         <div id="timer">Tempo: 0s</div>
+
         <div id="game-over-screen" class="hidden">
             <h1>Fim de Jogo!</h1>
             <p id="final-score"></p>

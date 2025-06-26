@@ -9,10 +9,25 @@ const finalScoreDisplay = document.getElementById('final-score');
 const restartButton = document.getElementById('restart-button');
 const startScreen = document.getElementById('start-screen');
 const startButton = document.getElementById('start-button');
+const flowersContainer = document.getElementById('flowers-container'); // Novo container para flores
+
+// Elementos decorativos que agora estão no HTML
+const treeLeft = document.querySelector('.tree-left');
+const treeRight = document.querySelector('.tree-right');
+const bird1 = document.querySelector('.bird-1');
+const bird2 = document.querySelector('.bird-2');
+const bird3 = document.querySelector('.bird-3');
+const rabbit1 = document.querySelector('.rabbit-1');
+const rabbit2 = document.querySelector('.rabbit-2');
+const cloud1 = document.querySelector('.cloud-1');
+const cloud2 = document.querySelector('.cloud-2');
+const cloud3 = document.querySelector('.cloud-3');
+const stream = document.querySelector('.stream');
+const grass = document.querySelector('.grass');
 
 let score = 0;
 let level = 1;
-let fruitSpeed = 1.5; // Velocidade inicial mais lenta
+let fruitSpeed = 1.5; // Velocidade inicial mais lenta (agora usada para calcular a duração da animação)
 let fruitsCaught = 0;
 let missedFruits = 0;
 const MAX_MISSED_FRUITS = 10;
@@ -21,7 +36,8 @@ let gameTimerInterval; // Intervalo para o tempo de jogo
 let fruitDropDelay = 1500; // Intervalo inicial mais longo para cair uma fruta (em ms)
 let gameTime = 0; // Tempo de jogo em segundos
 let isGameOver = false;
-let weatherInterval; // Adicione esta linha
+let weatherInterval;
+let currentWeather = 'day'; // Estado inicial do clima
 
 // Variáveis para controlar a queda gradual e múltiplas frutas
 let fruitsToDrop = 1; // Quantidade inicial de frutas a cair por "onda" (começa com 1)
@@ -49,7 +65,8 @@ function initializeGame() {
     isGameOver = false;
     fruitDropDelay = 1500; // Resetar para o intervalo inicial mais longo
     fruitsToDrop = 1; // Resetar para 1 fruta no início
-    currentFruitDropCount = 0; // Resetar
+    currentFruitDropCount = 0;
+    currentWeather = 'day'; // Resetar clima para dia
 
     scoreDisplay.textContent = `Pontos: ${score}`;
     levelDisplay.textContent = `Nível: ${level}`;
@@ -60,17 +77,21 @@ function initializeGame() {
     startScreen.classList.add('hidden');
     gameContainer.classList.remove('hidden');
 
-    // Remove todas as frutas e elementos decorativos existentes
-    document.querySelectorAll('.fruit, .tree, .flower, .grass, .bird, .rabbit, .cloud, .stream').forEach(el => el.remove());
+    // Limpa todas as frutas existentes
+    document.querySelectorAll('.fruit').forEach(el => el.remove());
 
+    // Garante que o gameContainer comece no estado 'day' e remove outras classes de clima
+    gameContainer.classList.remove('afternoon', 'night', 'rain', 'windy');
+
+    // Inicializa/Reseta os elementos decorativos
+    setupDecorativeElements();
+    
     startGame();
 }
 
 // --- Movimento da Cesta (Responsivo para Mouse e Touch) ---
-
-// Função para mover a cesta
 function moveBasket(clientX) {
-    if (isGameOver || startScreen.classList.contains('hidden') === false) return;
+    if (isGameOver || !startScreen.classList.contains('hidden')) return;
 
     const gameRect = gameContainer.getBoundingClientRect();
     const basketWidth = basket.offsetWidth;
@@ -92,15 +113,14 @@ document.addEventListener('mousemove', (e) => {
 
 // Eventos para toque (touch)
 document.addEventListener('touchmove', (e) => {
-    // Evita o scroll da página ao mover o dedo
-    e.preventDefault(); 
+    e.preventDefault(); // Evita o scroll da página ao mover o dedo
     if (e.touches.length > 0) {
         moveBasket(e.touches[0].clientX);
     }
 }, { passive: false }); // `passive: false` é importante para `preventDefault()` funcionar
 
 
-// --- Criação de Frutas ---
+// --- Criação de Frutas (Agora com Animação CSS) ---
 function createFruit() {
     if (isGameOver) return;
 
@@ -109,46 +129,57 @@ function createFruit() {
 
     const fruit = document.createElement('div');
     fruit.classList.add('fruit', fruitData.name);
-    // Ajuste a posição X para levar em conta o tamanho da fruta
-    const maxLeft = gameContainer.offsetWidth - fruit.offsetWidth; 
-    fruit.style.left = `${Math.random() * maxLeft}px`; 
+
+    // Define uma largura padrão temporária para calcular a posição inicial
+    // Ou usa o estilo computado para ter o tamanho real da fruta no CSS
+    const tempFruitWidth = fruit.offsetWidth > 0 ? fruit.offsetWidth : 50; // 50px como fallback
+    const maxLeft = gameContainer.offsetWidth - tempFruitWidth;
+    fruit.style.left = `${Math.random() * maxLeft}px`;
     
-    fruit.dataset.fruitType = fruitData.name;
+    // Calcula a duração da animação com base na velocidade
+    // Quanto maior a velocidade, menor a duração (mais rápido cai)
+    // 100vh de queda + 100px para sair completamente da tela
+    const animationDuration = (gameContainer.offsetHeight / (fruitSpeed * 60)) + 's'; // Ajuste o multiplicador 60 para sensibilidade
+    fruit.style.setProperty('--fall-duration', animationDuration);
+
     gameContainer.appendChild(fruit);
 
-    let fruitPosition = -60;
-    const fallInterval = setInterval(() => {
-        if (isGameOver) {
-            clearInterval(fallInterval);
-            fruit.remove();
-            return;
-        }
-
-        fruitPosition += fruitSpeed;
-        fruit.style.top = `${fruitPosition}px`;
-
-        // Colisão com a cesta
-        if (checkCollision(fruit, basket)) {
-            score += 1;
-            fruitsCaught++;
-            scoreDisplay.textContent = `Pontos: ${score}`;
-            fruit.remove();
-            clearInterval(fallInterval);
-            checkLevelUp();
-        }
-
-        // Fruta caiu no chão
-        if (fruitPosition > gameContainer.offsetHeight) {
-            fruit.remove();
-            clearInterval(fallInterval);
+    // Detectar quando a animação CSS termina para remover a fruta ou contá-la como perdida
+    fruit.addEventListener('animationend', () => {
+        // Se a fruta ainda existe (não foi pega pela cesta) e a animação de queda terminou
+        // Isso significa que ela caiu no chão
+        if (fruit.parentNode === gameContainer) { // Verifica se ainda é um filho do gameContainer
             missedFruits++;
             missedFruitsDisplay.textContent = `Perdidas: ${missedFruits}/${MAX_MISSED_FRUITS}`;
+            fruit.remove();
             if (missedFruits >= MAX_MISSED_FRUITS) {
                 endGame();
             }
         }
-    }, 20);
+    });
+
+    // Colisão (usando requestAnimationFrame para checagem contínua enquanto a fruta cai)
+    function checkFruitCollision() {
+        if (isGameOver || !fruit.parentNode) return; // Se a fruta já foi removida
+
+        if (checkCollision(fruit, basket)) {
+            score += 1;
+            fruitsCaught++;
+            scoreDisplay.textContent = `Pontos: ${score}`;
+            fruit.remove(); // Remove a fruta ao ser pega
+            checkLevelUp();
+            return; // Termina a checagem para esta fruta
+        }
+
+        // Continua checando colisão se a fruta ainda não caiu completamente
+        const fruitRect = fruit.getBoundingClientRect();
+        if (fruitRect.top < gameContainer.offsetHeight) {
+            requestAnimationFrame(checkFruitCollision);
+        }
+    }
+    requestAnimationFrame(checkFruitCollision);
 }
+
 
 // --- Checagem de Colisão ---
 function checkCollision(fruit, basket) {
@@ -171,7 +202,7 @@ function checkLevelUp() {
         console.log(`Nível ${level}!`);
 
         // Aumenta a velocidade sempre que o nível aumenta
-        fruitSpeed += 0.2; 
+        fruitSpeed += 0.2;
         console.log(`Velocidade aumentada para ${fruitSpeed.toFixed(2)}`);
 
         // Aumenta a quantidade de frutas a partir do nível 5
@@ -182,8 +213,8 @@ function checkLevelUp() {
 
         // Diminui ligeiramente o atraso entre as ondas de frutas em níveis mais altos
         if (fruitDropDelay > 500) { // Limita o mínimo de atraso para 500ms
-            fruitDropDelay -= 50; 
-            if (fruitDropDelay < 500) fruitDropDelay = 500; // Garante que não fique menor que 500ms
+            fruitDropDelay -= 50;
+            if (fruitDropDelay < 500) fruitDropDelay = 500;
             console.log(`Atraso de queda diminuído para ${fruitDropDelay}ms`);
         }
     }
@@ -199,12 +230,12 @@ function manageFruitDrops() {
     if (currentFruitDropCount < fruitsToDrop) {
         createFruit();
         currentFruitDropCount++;
-        // Reintroduz um pequeno delay (ex: 80ms) para fluidez na queda de múltiplas frutas
-        fruitDropTimeout = setTimeout(manageFruitDrops, 80); 
+        // Pequeno delay para que as frutas da mesma "onda" não apareçam exatamente juntas
+        fruitDropTimeout = setTimeout(manageFruitDrops, 100);
     } else {
         currentFruitDropCount = 0;
         // Intervalo para a próxima onda completa de frutas
-        fruitDropTimeout = setTimeout(manageFruitDrops, fruitDropDelay); 
+        fruitDropTimeout = setTimeout(manageFruitDrops, fruitDropDelay);
     }
 }
 
@@ -216,11 +247,6 @@ function startGame() {
     clearTimeout(fruitDropTimeout);
     clearInterval(weatherInterval); // Limpa o intervalo de clima anterior, se existir
 
-    // Remove todas as classes de clima anteriores para garantir que o jogo comece no 'dia'
-    gameContainer.classList.remove('afternoon', 'night', 'rain', 'windy');
-
-    addDecorativeElements();
-
     manageFruitDrops(); // Inicia a queda de frutas
 
     gameTimerInterval = setInterval(() => {
@@ -229,40 +255,44 @@ function startGame() {
     }, 1000);
 
     // --- Controle de Clima e Hora do Dia ---
-    let currentWeather = 'day'; // Estado inicial do clima
-    weatherInterval = setInterval(() => { // Atribua o intervalo à variável weatherInterval
+    weatherInterval = setInterval(() => {
         if (isGameOver) {
             clearInterval(weatherInterval);
             return;
         }
 
-        if (gameTime > 30 && currentWeather === 'day') {
+        // Lógica de transição de clima baseada no tempo de jogo
+        if (gameTime >= 30 && gameTime < 60 && currentWeather !== 'afternoon') {
+            gameContainer.classList.remove('night', 'rain', 'windy');
             gameContainer.classList.add('afternoon');
             currentWeather = 'afternoon';
+            removeRain(); // Garante que a chuva seja removida se mudar para tarde
             console.log("Mudando para a Tarde!");
-        } else if (gameTime > 60 && currentWeather === 'afternoon') {
-            gameContainer.classList.remove('afternoon');
+        } else if (gameTime >= 60 && gameTime < 90 && currentWeather !== 'night') {
+            gameContainer.classList.remove('afternoon', 'rain', 'windy');
             gameContainer.classList.add('night');
             currentWeather = 'night';
+            removeRain();
             console.log("Mudando para a Noite!");
-        } else if (gameTime > 90 && currentWeather === 'night') {
-            gameContainer.classList.remove('night');
+        } else if (gameTime >= 90 && gameTime < 120 && currentWeather !== 'rain') {
+            gameContainer.classList.remove('afternoon', 'night', 'windy');
             gameContainer.classList.add('rain');
             currentWeather = 'rain';
-            addRain(); // Função para adicionar as gotas de chuva
+            addRain(); // Adiciona as gotas de chuva
             console.log("Começando a Chover!");
-        } else if (gameTime > 120 && currentWeather === 'rain') {
-            gameContainer.classList.remove('rain');
-            removeRain(); // Função para remover as gotas de chuva
+        } else if (gameTime >= 120 && gameTime < 150 && currentWeather !== 'windy') {
+            gameContainer.classList.remove('afternoon', 'night', 'rain');
             gameContainer.classList.add('windy');
             currentWeather = 'windy';
+            removeRain(); // Remove a chuva quando o vento começa
             console.log("Ventando!");
-        } else if (gameTime > 150 && currentWeather === 'windy') { // Adicionado currentWeather para não reiniciar antes da hora
-            gameContainer.classList.remove('windy');
-            gameContainer.classList.add('day'); // Volta para o dia
+        } else if (gameTime >= 150 && currentWeather !== 'day') {
+            gameContainer.classList.remove('afternoon', 'night', 'rain', 'windy');
+            // Não adiciona 'day' explicitamente, apenas remove os outros
             currentWeather = 'day';
+            removeRain();
             console.log("Voltando ao Dia!");
-            gameTime = 0; // Reinicia o ciclo de clima para o exemplo
+            gameTime = 0; // Reinicia o ciclo de clima (mantém o gameTime para o jogo, mas reseta o ciclo do tempo)
         }
     }, 5000); // Verifica o tempo a cada 5 segundos para mudar o clima
 }
@@ -273,93 +303,44 @@ function endGame() {
     clearInterval(gameInterval);
     clearInterval(gameTimerInterval);
     clearTimeout(fruitDropTimeout);
+    clearInterval(weatherInterval); // Limpa o intervalo de clima
+    document.querySelectorAll('.fruit').forEach(fruit => fruit.remove()); // Remove frutas restantes
+    removeRain(); // Garante que a chuva seja removida no fim do jogo
+
     finalScoreDisplay.textContent = `Você pegou ${score} frutas!`;
     gameOverScreen.classList.remove('hidden');
 }
 
-// --- Adiciona elementos decorativos (árvores, flores, animais, nuvens, riacho) ---
-function addDecorativeElements() {
-    // Remove elementos antigos para reiniciar
-    document.querySelectorAll('.tree, .flower, .grass, .bird, .rabbit, .cloud, .stream').forEach(el => el.remove());
+// --- Configura e posiciona elementos decorativos (chamado apenas uma vez no início ou reinício) ---
+function setupDecorativeElements() {
+    // Remover flores antigas antes de gerar novas
+    flowersContainer.innerHTML = ''; 
 
-    const grassDetail = document.createElement('div');
-    grassDetail.classList.add('grass');
-    gameContainer.appendChild(grassDetail);
-
-    const tree1 = document.createElement('div');
-    tree1.classList.add('tree', 'left');
-    tree1.innerHTML = '<div class="trunk"></div><div class="leaves"></div>';
-    gameContainer.appendChild(tree1);
-
-    const tree2 = document.createElement('div');
-    tree2.classList.add('tree', 'right');
-    tree2.innerHTML = '<div class="trunk"></div><div class="leaves"></div>';
-    gameContainer.appendChild(tree2);
-
+    // Posiciona flores aleatoriamente
     for (let i = 0; i < 12; i++) {
         const flower = document.createElement('div');
         flower.classList.add('flower');
         flower.style.left = `${Math.random() * (gameContainer.offsetWidth - 50)}px`;
-        flower.style.bottom = `${2 + Math.random() * 10}%`;
-        gameContainer.appendChild(flower);
+        flower.style.bottom = `${2 + Math.random() * 10}%`; // Para ficarem no gramado
+        flowersContainer.appendChild(flower);
     }
 
-    // --- Pássaros ---
-    const bird1 = document.createElement('div');
-    bird1.classList.add('bird');
-    gameContainer.appendChild(bird1);
-
-    const bird2 = document.createElement('div');
-    bird2.classList.add('bird');
-    bird2.style.animationDelay = '7s';
-    bird2.style.top = '15%';
-    gameContainer.appendChild(bird2);
-
-    const bird3 = document.createElement('div'); // Mais um pássaro
-    bird3.classList.add('bird');
-    bird3.style.animationDelay = '12s';
-    bird3.style.top = '20%';
-    gameContainer.appendChild(bird3);
-
-    // --- Coelhos ---
-    const rabbit1 = document.createElement('div');
-    rabbit1.classList.add('rabbit');
-    gameContainer.appendChild(rabbit1);
-
-    const rabbit2 = document.createElement('div'); // Mais um coelho
-    rabbit2.classList.add('rabbit');
-    rabbit2.style.animationDelay = '10s'; // Para se moverem em tempos diferentes
-    rabbit2.style.left = '80%'; // Posição inicial diferente
-    gameContainer.appendChild(rabbit2);
-
-    // --- Nuvens ---
-    const cloud1 = document.createElement('div');
-    cloud1.classList.add('cloud', 'small');
-    cloud1.style.top = `${Math.random() * 20 + 5}%`; // Posição vertical aleatória
-    cloud1.style.animationDelay = `${Math.random() * 10}s`; // Atraso aleatório
-    gameContainer.appendChild(cloud1);
-
-    const cloud2 = document.createElement('div');
-    cloud2.classList.add('cloud', 'medium');
+    // Nuvens: Apenas posiciona randomicamente a cada início, se desejar.
+    // As animações já cuidam do movimento.
+    cloud1.style.top = `${Math.random() * 20 + 5}%`;
+    cloud1.style.animationDelay = `${Math.random() * 10}s`;
     cloud2.style.top = `${Math.random() * 20 + 15}%`;
     cloud2.style.animationDelay = `${Math.random() * 10}s`;
-    gameContainer.appendChild(cloud2);
-
-    const cloud3 = document.createElement('div'); // Mais uma nuvem
-    cloud3.classList.add('cloud', 'small');
     cloud3.style.top = `${Math.random() * 20 + 10}%`;
     cloud3.style.animationDelay = `${Math.random() * 10}s`;
-    gameContainer.appendChild(cloud3);
 
-    // --- Riacho ---
-    const stream = document.createElement('div');
-    stream.classList.add('stream');
-    gameContainer.appendChild(stream);
+    // Resetar posições de elementos que podem ter sido escondidos por media queries mobile, etc.
+    // Ou garantir que eles estejam visíveis se o display:none foi aplicado via JS em alguma lógica
+    [treeLeft, treeRight, bird1, bird2, bird3, rabbit1, rabbit2, cloud1, cloud2, cloud3, stream, grass].forEach(el => {
+        if (el) el.style.display = ''; // Remove qualquer display:none inline
+    });
 }
 
-// --- Eventos dos Botões ---
-startButton.addEventListener('click', initializeGame);
-restartButton.addEventListener('click', initializeGame);
 
 // --- Funções para adicionar e remover a chuva ---
 function addRain() {
@@ -368,7 +349,8 @@ function addRain() {
         const drop = document.createElement('div');
         drop.classList.add('raindrop');
         drop.style.left = `${Math.random() * 100}vw`;
-        drop.style.animationDelay = `${Math.random()}s`;
+        drop.style.animationDelay = `${Math.random() * 2}s`; // Atraso maior para parecer mais natural
+        drop.style.animationDuration = `${0.8 + Math.random() * 0.4}s`; // Duração variada da queda
         drop.style.opacity = `${0.4 + Math.random() * 0.4}`; // Varia a opacidade
         gameContainer.appendChild(drop);
     }
@@ -377,3 +359,14 @@ function addRain() {
 function removeRain() {
     document.querySelectorAll('.raindrop').forEach(drop => drop.remove());
 }
+
+// --- Eventos dos Botões ---
+startButton.addEventListener('click', initializeGame);
+restartButton.addEventListener('click', initializeGame);
+
+// Chamar initializeGame() para configurar a tela inicial corretamente no carregamento
+document.addEventListener('DOMContentLoaded', () => {
+    // Esconde o game container no início, a tela inicial já está visível por padrão
+    gameContainer.classList.add('hidden');
+    startScreen.classList.remove('hidden');
+});

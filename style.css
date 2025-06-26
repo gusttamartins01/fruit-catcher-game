@@ -1,472 +1,457 @@
-/* --- Estilos Gerais e Padrão (para telas grandes - Desktop) --- */
+/* --- Estilos Gerais e Padrão (Base para Escalonamento) --- */
 * {
     box-sizing: border-box;
 }
 
-body {
+html, body {
     margin: 0;
-    overflow: hidden; /* Garante que não haja barras de rolagem */
+    padding: 0;
+    overflow: hidden; /* Garante que não haja barras de rolagem globais */
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background: linear-gradient(to bottom, #87CEEB, #6A5ACD); /* Céu padrão */
-    font-family: 'Comic Sans MS', cursive, sans-serif;
+    font-family: 'Poppins', sans-serif; /* Nova fonte principal */
+    font-size: 16px; /* Tamanho base em pixels para body, 'em' irá usar como referência */
     color: #fff;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+    text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.8); /* Sombra mais pronunciada */
 }
 
+/* Base de escalonamento responsiva para o jogo inteiro */
+body { font-size: min(1.2vw, 18px); }
+
+@media (max-width: 1200px) { body { font-size: min(1.5vw, 17px); } }
+@media (max-width: 992px) { body { font-size: min(1.8vw, 16px); } }
+@media (max-width: 768px) { body { font-size: min(2.2vw, 15px); } }
+@media (max-width: 576px) { body { font-size: min(2.8vw, 14px); } }
+@media screen and (orientation: landscape) and (max-height: 576px) { body { font-size: min(2.5vh, 14px); } }
+
+
+/* --- Tela Inicial (Start Screen) --- */
 #start-screen {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.85);
+    background-color: #1E90FF;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     color: #fff;
-    font-size: 2em;
+    font-size: 1.5em;
     text-align: center;
-    z-index: 200; /* Acima de tudo */
+    z-index: 200;
 }
 
 #start-screen h1 {
-    font-size: 4em;
-    margin-bottom: 20px;
-    color: #FFD700; /* Dourado */
-    text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.7);
+    font-family: 'Press Start 2P', cursive; /* Nova fonte para título */
+    font-size: 3.5em;
+    margin-bottom: 0.5em;
+    color: #FFD700;
+    text-shadow: 0.2em 0.2em 0.3em rgba(0, 0, 0, 0.8);
 }
 
 #start-screen p {
-    font-size: 1.8em;
-    margin-bottom: 40px;
+    font-size: 1.2em;
+    margin-bottom: 1.5em;
+    font-weight: bold;
 }
 
 #start-button {
-    padding: 20px 40px;
-    font-size: 1.8em;
-    background-color: #4CAF50; /* Verde */
+    padding: 1em 2.5em;
+    font-size: 1.2em;
+    background-color: #4CAF50;
     color: white;
     border: none;
-    border-radius: 15px;
+    border-radius: 0.8em;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0.3em 1em rgba(0, 0, 0, 0.6);
 }
 
 #start-button:hover {
     background-color: #45a049;
-    transform: translateY(-3px);
+    transform: translateY(-0.2em);
 }
 
 #start-button:active {
     transform: translateY(0);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0.1em 0.5em rgba(0, 0, 0, 0.6);
 }
 
+/* --- Container Principal do Jogo --- */
 #game-container {
     position: absolute;
-    width: 100vw; /* Ocupa 100% da largura da viewport */
-    height: 100vh; /* Ocupa 100% da altura da viewport */
-    border: none; /* Sem borda */
-    overflow: hidden; /* Esconde qualquer coisa que transborde */
-    box-shadow: none; /* Sem sombra */
-    border-radius: 0; /* Sem bordas arredondadas */
+    width: 100vw;
+    height: 100vh;
+    border: none;
+    overflow: hidden;
+    box-shadow: none;
+    border-radius: 0;
+    background-color: transparent;
 }
 
-/* Pseudo-elemento para o céu */
 #game-container::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
-    height: 50%; /* Metade superior para o céu */
-    background: linear-gradient(to bottom, #87CEEB, #6A5ACD); /* Céu azul */
-    z-index: 0; /* Fundo */
+    height: 50%;
+    background: linear-gradient(to bottom, #87CEEB, #6A5ACD);
+    z-index: 0;
+    transition: background 1s ease-in-out;
 }
 
-/* Pseudo-elemento para o sol */
 #game-container::after {
     content: '';
     position: absolute;
-    top: 50px;
-    right: 100px;
-    width: 100px;
-    height: 100px;
-    background-color: #FFD700; /* Dourado */
-    border-radius: 50%; /* Círculo */
-    box-shadow: 0 0 40px #FFD700; /* Brilho */
-    z-index: 1; /* Acima do céu */
+    top: 8vh;
+    right: 8vw;
+    width: min(8vw, 100px);
+    height: min(8vw, 100px);
+    min-width: 50px; min-height: 50px;
+    background-color: #FFD700;
+    border-radius: 50%;
+    box-shadow: 0 0 40px #FFD700;
+    z-index: 1;
+    transition: all 1s ease-in-out;
 }
 
-/* Gramado */
-#game-container > .grass {
+.grass {
     position: absolute;
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 50%; /* Metade inferior para a grama */
-    background: linear-gradient(to top, #32CD32, #6B8E23); /* Verde da grama */
-    z-index: 0; /* Fundo */
+    height: 50%;
+    background: linear-gradient(to top, #32CD32, #6B8E23);
+    z-index: 0;
+    transition: background 1s ease-in-out;
 }
 
-/* Árvores */
 .tree {
     position: absolute;
-    bottom: 8%; /* Posicionamento acima da base */
-    width: 150px;
-    height: 250px;
+    bottom: 5%;
+    width: min(12vw, 180px);
+    height: min(25vw, 300px);
+    min-width: 80px; min-height: 150px;
     z-index: 1;
+    transition: all 1s ease-in-out;
 }
 
-.tree.left {
-    left: 5%;
-}
-
-.tree.right {
-    right: 5%;
-}
+.tree-left { left: 5%; }
+.tree-right { right: 5%; }
 
 .tree .trunk {
     position: absolute;
     bottom: 0;
-    left: calc(50% - 20px); /* Centraliza o tronco na árvore */
-    width: 40px;
-    height: 150px;
-    background-color: #8B4513; /* Marrom */
-    border-radius: 8px;
-    box-shadow: inset 0 0 10px rgba(0,0,0,0.4);
+    left: calc(50% - min(1.5vw, 20px));
+    width: min(3vw, 40px);
+    height: min(15vw, 150px);
+    min-width: 20px; min-height: 80px;
+    background-color: #8B4513;
+    border-radius: 0.5em;
+    box-shadow: inset 0 0 0.5em rgba(0,0,0,0.4);
+    transition: background-color 1s ease-in-out;
 }
 
 .tree .leaves {
     position: absolute;
-    bottom: 120px; /* Posiciona as folhas acima do tronco */
-    width: 150px;
-    height: 150px;
-    background-color: #228B22; /* Verde das folhas */
+    bottom: min(8vw, 120px);
+    width: min(12vw, 150px);
+    height: min(12vw, 150px);
+    min-width: 80px; min-height: 80px;
+    background-color: #228B22;
     border-radius: 50%;
-    box-shadow: inset 0 0 15px rgba(0,0,0,0.4);
+    box-shadow: inset 0 0 0.8em rgba(0,0,0,0.4);
+    transition: background-color 1s ease-in-out;
 }
 
-.tree .leaves::before,
-.tree .leaves::after {
+.tree .leaves::before, .tree .leaves::after {
     content: '';
     position: absolute;
-    background-color: #3CB371; /* Verde mais claro para detalhes */
+    background-color: #3CB371;
     border-radius: 50%;
-    width: 100px;
-    height: 100px;
+    width: min(8vw, 100px);
+    height: min(8vw, 100px);
+    min-width: 50px; min-height: 50px;
+    transition: background-color 1s ease-in-out;
 }
 
-.tree .leaves::before {
-    top: -30px;
-    left: -30px;
-}
+.tree .leaves::before { top: -2vw; left: -2vw; }
+.tree .leaves::after { bottom: -2vw; right: -2vw; }
 
-.tree .leaves::after {
-    bottom: -30px;
-    right: -30px;
+#flowers-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    pointer-events: none;
+    z-index: 2;
 }
-
-/* Flores */
 .flower {
     position: absolute;
-    width: 25px;
-    height: 25px;
-    background-color: #FF69B4; /* Rosa */
+    width: min(2.5vw, 30px);
+    height: min(2.5vw, 30px);
+    min-width: 15px; min-height: 15px;
+    background-color: #FF69B4;
     border-radius: 50%;
-    border: 3px solid #800080; /* Roxo */
+    border: 0.2em solid #800080;
     z-index: 2;
+    transition: all 1s ease-in-out;
 }
 
 .flower::before {
     content: '';
     position: absolute;
-    top: 6px;
-    left: 6px;
-    width: 13px;
-    height: 13px;
-    background-color: #FFFF00; /* Amarelo */
+    top: 0.25em; left: 0.25em;
+    width: 0.5em; height: 0.5em;
+    background-color: #FFFF00;
     border-radius: 50%;
+    transition: background-color 1s ease-in-out;
 }
 
-/* Pássaros */
 .bird {
     position: absolute;
-    width: 40px;
-    height: 20px;
-    background-color: #A0522D; /* Marrom claro */
+    width: min(4vw, 60px); height: min(2vw, 30px);
+    min-width: 25px; min-height: 12px;
+    background-color: #A0522D;
     border-radius: 50%;
     top: 10%;
-    left: -50px; /* Começa fora da tela */
+    left: -10vw;
     z-index: 11;
-    animation: fly 15s linear infinite; /* Animação de voo */
+    animation: fly 15s linear infinite;
+    transition: all 1s ease-in-out;
 }
 
-.bird::before {
+.bird::before, .bird::after {
     content: '';
     position: absolute;
-    width: 30px;
-    height: 15px;
-    background-color: #654321; /* Marrom escuro para asas */
-    border-radius: 50% 50% 0 0;
-    top: -10px;
-    left: 5px;
-    transform: rotate(-20deg);
-}
-.bird::after {
-    content: '';
-    position: absolute;
-    width: 30px;
-    height: 15px;
     background-color: #654321;
     border-radius: 50% 50% 0 0;
-    top: -10px;
-    left: 15px;
-    transform: rotate(20deg);
+    width: min(2.5vw, 40px); height: min(1.25vw, 20px);
+    min-width: 15px; min-height: 8px;
+    transition: background-color 1s ease-in-out;
 }
+.bird::before { top: -0.8vw; left: 0.5vw; transform: rotate(-20deg); }
+.bird::after { top: -0.8vw; left: 1.5vw; transform: rotate(20deg); }
 
 @keyframes fly {
-    0% {
-        left: -50px;
-        top: 10%;
-        transform: scaleX(1); /* Virado para a direita */
-    }
-    25% {
-        top: 8%; /* Pequena variação na altura */
-    }
-    50% {
-        left: calc(100% + 50px); /* Vai até o outro lado */
-        top: 12%;
-        transform: scaleX(1);
-    }
-    50.1% {
-        transform: scaleX(-1); /* Inverte para voltar */
-    }
-    75% {
-        top: 9%;
-    }
-    100% {
-        left: -50px;
-        top: 10%;
-        transform: scaleX(-1); /* Volta para a posição inicial invertido */
-    }
+    0% { left: -10vw; top: 10%; transform: scaleX(1); }
+    25% { top: 8%; }
+    50% { left: 110vw; top: 12%; transform: scaleX(1); }
+    50.1% { transform: scaleX(-1); }
+    75% { top: 9%; }
+    100% { left: -10vw; top: 10%; transform: scaleX(-1); }
 }
 
-/* Coelhos */
 .rabbit {
     position: absolute;
-    width: 60px;
-    height: 40px;
-    background-color: #D3D3D3; /* Cinza claro */
+    width: min(5vw, 80px); height: min(3.5vw, 50px);
+    min-width: 40px; min-height: 25px;
+    background-color: #D3D3D3;
     border-radius: 50%;
-    bottom: 50px;
+    bottom: min(3vw, 40px);
     left: 10%;
     z-index: 3;
-    animation: hop 20s linear infinite; /* Animação de pular */
+    animation: hop 20s linear infinite;
+    transition: all 1s ease-in-out;
 }
 
 .rabbit::before, .rabbit::after {
     content: '';
     position: absolute;
     background-color: #D3D3D3;
-    width: 15px;
-    height: 35px;
+    width: min(1.2vw, 20px); height: min(3vw, 40px);
+    min-width: 10px; min-height: 20px;
     border-radius: 50% 50% 0 0;
-    top: -25px; /* Orelhas */
+    top: -2vw;
+    transition: background-color 1s ease-in-out;
 }
 
-.rabbit::before {
-    left: 10px;
-    transform: rotate(-10deg);
-}
-
-.rabbit::after {
-    left: 35px;
-    transform: rotate(10deg);
-}
+.rabbit::before { left: 0.8vw; transform: rotate(-10deg); }
+.rabbit::after { left: 2.8vw; transform: rotate(10deg); }
 
 @keyframes hop {
     0% { left: 10%; transform: translateY(0); }
-    10% { transform: translateY(-5px); } /* Pequeno pulo */
+    10% { transform: translateY(-0.5em); }
     20% { left: 30%; transform: translateY(0); }
-    30% { transform: translateY(-5px); }
+    30% { transform: translateY(-0.5em); }
     40% { left: 50%; transform: translateY(0); }
-    50% { left: 70%; transform: translateY(-5px); }
+    50% { left: 70%; transform: translateY(-0.5em); }
     60% { left: 90%; transform: translateY(0); }
-    60.1% { transform: scaleX(-1); } /* Vira e volta */
-    70% { left: 70%; transform: translateY(-5px); }
+    60.1% { transform: scaleX(-1); }
+    70% { left: 70%; transform: translateY(-0.5em); }
     80% { left: 50%; transform: translateY(0); }
-    90% { left: 30%; transform: translateY(-5px); }
+    90% { left: 30%; transform: translateY(-0.5em); }
     100% { left: 10%; transform: translateY(0); transform: scaleX(-1); }
 }
 
-/* Nuvens */
 .cloud {
     position: absolute;
     background: #fff;
     border-radius: 50%;
-    box-shadow: 0 0 15px rgba(255,255,255,0.8);
+    box-shadow: 0 0 0.8em rgba(255,255,255,0.8);
     opacity: 0.8;
     z-index: 1;
-    animation: moveCloud 30s linear infinite; /* Animação de movimento */
+    animation: moveCloud 30s linear infinite;
+    transition: all 1s ease-in-out;
 }
 
 .cloud.small {
-    width: 80px;
-    height: 40px;
-    animation-duration: 25s; /* Mais rápido que a média */
-}
-.cloud.small::before, .cloud.small::after {
-    content: '';
-    position: absolute;
-    background: #fff;
-    border-radius: 50%;
+    width: min(8vw, 100px); height: min(4vw, 50px);
+    min-width: 50px; min-height: 25px;
+    animation-duration: 25s;
 }
 .cloud.small::before {
-    width: 50px;
-    height: 50px;
-    top: -20px;
-    left: 10px;
+    content: ''; position: absolute; background: #fff; border-radius: 50%;
+    width: min(5vw, 60px); height: min(5vw, 60px);
+    min-width: 30px; min-height: 30px;
+    top: -1.5vw; left: 0.8vw;
 }
 .cloud.small::after {
-    width: 60px;
-    height: 60px;
-    top: -10px;
-    right: 10px;
+    content: ''; position: absolute; background: #fff; border-radius: 50%;
+    width: min(6vw, 70px); height: min(6vw, 70px);
+    min-width: 35px; min-height: 35px;
+    top: -0.8vw; right: 0.8vw;
 }
 
 .cloud.medium {
-    width: 120px;
-    height: 60px;
-    animation-duration: 35s; /* Mais lento que a pequena */
-}
-.cloud.medium::before, .cloud.medium::after {
-    content: '';
-    position: absolute;
-    background: #fff;
-    border-radius: 50%;
+    width: min(12vw, 150px); height: min(6vw, 80px);
+    min-width: 80px; min-height: 40px;
+    animation-duration: 35s;
 }
 .cloud.medium::before {
-    width: 70px;
-    height: 70px;
-    top: -30px;
-    left: 20px;
+    content: ''; position: absolute; background: #fff; border-radius: 50%;
+    width: min(7vw, 90px); height: min(7vw, 90px);
+    min-width: 45px; min-height: 45px;
+    top: -2.5vw; left: 1.5vw;
 }
 .cloud.medium::after {
-    width: 80px;
-    height: 80px;
-    top: -20px;
-    right: 20px;
+    content: ''; position: absolute; background: #fff; border-radius: 50%;
+    width: min(8vw, 100px); height: min(8vw, 100px);
+    min-width: 50px; min-height: 50px;
+    top: -1.5vw; right: 1.5vw;
 }
 
 @keyframes moveCloud {
-    0% { transform: translateX(-100vw); } /* Começa fora da tela à esquerda */
-    100% { transform: translateX(100vw); } /* Termina fora da tela à direita */
+    0% { transform: translateX(-100vw); }
+    100% { transform: translateX(100vw); }
 }
 
-/* Riacho */
 .stream {
     position: absolute;
-    bottom: 50%; /* Na divisa entre céu e grama */
+    bottom: 48%;
     left: 0;
     width: 100%;
-    height: 60px;
-    background: linear-gradient(to right, #4682B4, #6A5ACD); /* Tons de azul para água */
-    border-radius: 0 0 50% 50%; /* Formato de lago */
+    height: min(5vw, 60px);
+    min-height: 30px;
+    background: linear-gradient(to right, #4682B4, #6A5ACD);
+    border-radius: 0 0 50% 50%;
     z-index: 1;
     opacity: 0.8;
-    box-shadow: inset 0 5px 10px rgba(0,0,0,0.3);
+    box-shadow: inset 0 0.3em 0.6em rgba(0,0,0,0.3);
+    transition: all 1s ease-in-out;
 }
 
 .stream::before {
     content: '';
     position: absolute;
-    top: 10px;
+    top: min(0.8vw, 10px);
     left: 0;
     width: 100%;
-    height: 20px;
-    background: rgba(255,255,255,0.3); /* Brilho/reflexo da água */
+    height: min(1.5vw, 20px);
+    min-height: 10px;
+    background: rgba(255,255,255,0.3);
     border-radius: 50%;
-    filter: blur(5px);
-    animation: waterFlow 5s linear infinite; /* Animação de fluxo */
+    filter: blur(0.3em);
+    animation: waterFlow 5s linear infinite;
 }
 
 @keyframes waterFlow {
     0% { transform: translateX(0); }
-    100% { transform: translateX(-20px); } /* Simula movimento da água */
+    100% { transform: translateX(-2vw); }
 }
 
-/* Cesta */
+/* Cesta - MODIFICADO PARA TRANSFORM: TRANSLATEX */
 #basket {
     position: absolute;
-    bottom: 4%;
-    left: calc(50% - 80px); /* Centraliza */
-    width: 180px;
-    height: 100px;
-    background-color: #A0522D; /* Marrom escuro */
-    border-radius: 0 0 70px 70px;
-    border: 6px solid #654321; /* Borda mais escura */
-    box-shadow: inset 0 -12px 18px rgba(0, 0, 0, 0.4);
+    bottom: 3vh;
+    /* Removido 'left' fixo, agora controlado por transform */
+    width: min(14vw, 170px);
+    height: min(8vw, 95px);
+    min-width: 80px; min-height: 50px;
+    background-color: #A0522D;
+    border-radius: 0 0 min(7vw, 85px) min(7vw, 85px);
+    border: min(0.5vw, 6px) solid #654321;
+    box-shadow: inset 0 min(-1vw, -12px) min(1.5vw, 18px) rgba(0, 0, 0, 0.4);
     z-index: 10;
-    transition: left 0.1s linear; /* Suaviza o movimento */
-    background-image: radial-gradient(circle at top, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%); /* Brilho */
+    /* Transição para a propriedade transform, se desejar um movimento mais suave */
+    transition: transform 0.05s linear; /* Ajuste para mais ou menos suavidade */
+    background-image: radial-gradient(circle at top, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%);
+
+    /* Centraliza a cesta e permite que transform: translateX mova a partir do centro */
+    left: 50%;
+    transform: translateX(calc(-50% + var(--basket-x, 0px))); /* --basket-x será a variável de deslocamento */
 }
 
-/* Frutas */
+/* Frutas (animação de queda via CSS) */
 .fruit {
     position: absolute;
-    width: 45px;
-    height: 45px;
+    width: min(4vw, 50px); height: min(4vw, 50px);
+    min-width: 25px; min-height: 25px;
     border-radius: 50%;
-    top: -60px; /* Começa acima da tela */
+    top: -60px;
     z-index: 5;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+    box-shadow: 0.15em 0.15em 0.3em rgba(0, 0, 0, 0.3);
     background-size: cover;
     background-position: center;
-    border: 1px solid rgba(0,0,0,0.1);
+    border: 0.1em solid rgba(0,0,0,0.1);
+    animation: fallFruit var(--fall-duration) linear forwards;
 }
 
-/* Estilos específicos para cada tipo de fruta */
+@keyframes fallFruit {
+    from { transform: translateY(0); }
+    to { transform: translateY(calc(100vh + 100px)); }
+}
+
 .fruit.apple {
-    background: radial-gradient(circle at 30% 30%, #FF6347, #FF0000); /* Vermelho */
+    background: radial-gradient(circle at 30% 30%, #FF6347, #FF0000);
     border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
 }
 .fruit.banana {
-    background: linear-gradient(to right, #FFD700, #DAA520); /* Amarelo */
+    background: linear-gradient(to right, #FFD700, #DAA520);
+    width: min(5.5vw, 70px); height: min(2.5vw, 35px);
+    min-width: 35px; min-height: 18px;
     border-radius: 50% 50% 50% 50% / 30% 70% 30% 70%;
-    width: 60px;
-    height: 30px;
     transform: rotate(20deg);
 }
 .fruit.grapes {
-    background-color: #800080; /* Roxo */
-    width: 25px;
-    height: 25px;
-    /* Para criar a ilusão de cachos */
-    box-shadow: -5px -5px 0 0 #A020F0, 5px 5px 0 0 #A020F0, 0 5px 0 0 #A020F0, -5px 0 0 0 #A020F0, 0 -5px 0 0 #A020F0;
+    background-color: #800080;
+    width: min(2.2vw, 30px); height: min(2.2vw, 30px);
+    min-width: 15px; min-height: 15px;
+    box-shadow: -0.4em -0.4em 0 0 #A020F0, 0.4em 0.4em 0 0 #A020F0, 0 0.4em 0 0 #A020F0, -0.4em 0 0 0 #A020F0, 0 -0.4em 0 0 #A020F0;
     border-radius: 50%;
 }
 .fruit.pear {
-    background: linear-gradient(to top, #ADFF2F, #9ACD32); /* Verde claro */
+    background: linear-gradient(to top, #ADFF2F, #9ACD32);
+    width: min(3.5vw, 45px); height: min(5vw, 60px);
+    min-width: 20px; min-height: 35px;
     border-radius: 50% 50% 50% 50% / 70% 70% 30% 30%;
-    width: 40px;
-    height: 55px;
 }
 .fruit.papaya {
-    background: radial-gradient(circle at center, #FFDAB9, #FF8C00); /* Laranja-rosado */
+    background: radial-gradient(circle at center, #FFDAB9, #FF8C00);
+    width: min(4.5vw, 60px); height: min(6.5vw, 80px);
+    min-width: 30px; min-height: 45px;
     border-radius: 50% 50% 50% 50% / 70% 70% 30% 30%;
-    width: 50px;
-    height: 70px;
 }
 .fruit.watermelon {
-    background: radial-gradient(circle at center, #32CD32, #228B22); /* Verde escuro */
-    width: 60px;
-    height: 60px;
+    background: radial-gradient(circle at center, #32CD32, #228B22);
+    width: min(5vw, 65px); height: min(5vw, 65px);
+    min-width: 30px; min-height: 30px;
     border-radius: 50%;
     position: relative;
     overflow: hidden;
@@ -474,17 +459,16 @@ body {
 .fruit.watermelon::before {
     content: '';
     position: absolute;
-    top: 10px;
-    left: 10px;
-    width: 40px;
-    height: 40px;
-    background: repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(0,0,0,0.2) 5px, rgba(0,0,0,0.2) 10px); /* Listras */
+    top: min(1vw, 10px); left: min(1vw, 10px);
+    width: min(3vw, 40px); height: min(3vw, 40px);
+    min-width: 20px; min-height: 20px;
+    background: repeating-linear-gradient(45deg, transparent, transparent min(0.4vw, 5px), rgba(0,0,0,0.2) min(0.4vw, 5px), rgba(0,0,0,0.2) min(0.8vw, 10px));
     border-radius: 50%;
 }
 .fruit.melon {
-    background: radial-gradient(circle at center, #F0E68C, #DAA520); /* Amarelo-alaranjado */
-    width: 55px;
-    height: 55px;
+    background: radial-gradient(circle at center, #F0E68C, #DAA520);
+    width: min(4.8vw, 60px); height: min(4.8vw, 60px);
+    min-width: 28px; min-height: 28px;
     border-radius: 50%;
     position: relative;
     overflow: hidden;
@@ -492,11 +476,10 @@ body {
 .fruit.melon::before {
     content: '';
     position: absolute;
-    top: 5px;
-    left: 5px;
-    width: 45px;
-    height: 45px;
-    border: 3px solid rgba(255,255,255,0.4); /* Rede */
+    top: min(0.5vw, 6px); left: min(0.5vw, 6px);
+    width: min(3.8vw, 50px); height: min(3.8vw, 50px);
+    min-width: 25px; min-height: 25px;
+    border: min(0.25em, 3px) solid rgba(255,255,255,0.4);
     border-radius: 50%;
     box-sizing: border-box;
 }
@@ -504,20 +487,25 @@ body {
 /* Placar (Score, Level, Missed, Timer) */
 #score, #level, #missed-fruits, #timer {
     position: absolute;
-    top: 2%; /* Padrão para telas maiores */
-    padding: 10px 18px;
+    padding: 0.6em 1em;
     background-color: rgba(0, 0, 0, 0.6);
-    border-radius: 10px;
+    border-radius: 0.6em;
     font-weight: bold;
-    font-size: 1.2em;
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
-    z-index: 15; /* Acima dos elementos do jogo */
+    font-size: 1.1em;
+    box-shadow: 0 0 0.6em rgba(0, 0, 0, 0.7);
+    z-index: 15;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    font-family: 'Poppins', sans-serif; /* Nova fonte para placares */
 }
 
-#score { left: 2%; }
-#level { left: 15%; }
-#missed-fruits { left: 28%; color: #FFD700; /* Dourado para destaque */ }
-#timer { right: 2%; }
+#score { top: 2vh; left: 2vw; }
+#level { top: 2vh; left: 15vw; }
+#missed-fruits { top: 2vh; left: 28vw; color: #FFD700; }
+#timer { top: 2vh; right: 2vw; }
+
 
 /* Tela de Game Over */
 #game-over-screen {
@@ -532,405 +520,377 @@ body {
     justify-content: center;
     align-items: center;
     color: #fff;
-    font-size: 2.5em;
+    font-size: 1.8em;
     text-align: center;
     z-index: 100;
 }
 
 #game-over-screen h1 {
-    font-size: 4em;
-    margin-bottom: 25px;
-    color: #FF4500; /* Laranja avermelhado */
-    text-shadow: 4px 4px 6px rgba(0, 0, 0, 0.8);
+    font-family: 'Press Start 2P', cursive; /* Nova fonte para título */
+    font-size: 3em;
+    margin-bottom: 0.6em;
+    color: #FF4500;
+    text-shadow: 0.2em 0.2em 0.3em rgba(0, 0, 0, 0.8);
 }
 
 #game-over-screen p {
-    font-size: 2em;
-    margin-bottom: 40px;
+    font-size: 1.1em;
+    margin-bottom: 1.2em;
+    font-weight: bold;
 }
 
 #restart-button {
-    padding: 18px 35px;
-    font-size: 1.5em;
+    padding: 0.9em 2em;
+    font-size: 1.1em;
     background-color: #4CAF50;
     color: white;
     border: none;
-    border-radius: 12px;
+    border-radius: 0.7em;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 0.25em 0.8em rgba(0, 0, 0, 0.5);
 }
 
 #restart-button:hover {
     background-color: #45a049;
-    transform: translateY(-2px);
+    transform: translateY(-0.15em);
 }
 
 #restart-button:active {
     transform: translateY(0);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 0.1em 0.4em rgba(0, 0, 0, 0.5);
 }
 
-/* Utilitário para esconder elementos */
 .hidden {
     display: none !important;
 }
 
 /* --- Estilos de Clima e Hora do Dia --- */
-#game-container.afternoon::before {
-    background: linear-gradient(to bottom, #FFA500, #FF8C00); /* Tons de laranja e vermelho */
+#game-container.afternoon::before { background: linear-gradient(to bottom, #FFA500, #FF8C00); }
+#game-container.afternoon::after {
+    background-color: #FF8C00; box-shadow: 0 0 30px #FF8C00;
+    top: 12vh; right: 5vw;
+    width: min(6vw, 80px); height: min(6vw, 80px);
+    min-width: 40px; min-height: 40px;
 }
-#game-container.afternoon::after { /* Sol mais baixo e alaranjado */
-    background-color: #FF8C00;
-    box-shadow: 0 0 30px #FF8C00;
-    top: 150px;
-    right: 50px;
-    width: 80px;
-    height: 80px;
-}
-#game-container.afternoon > .grass {
-    background: linear-gradient(to top, #8FBC8F, #556B2F); /* Tons de verde mais escuros */
-}
+#game-container.afternoon > .grass { background: linear-gradient(to top, #8FBC8F, #556B2F); }
+#game-container.afternoon .tree .leaves { background-color: #3CB371; }
+#game-container.afternoon .tree .leaves::before, #game-container.afternoon .tree .leaves::after { background-color: #6B8E23; }
+#game-container.afternoon .flower { border-color: #DA70D6; background-color: #EE82EE; }
+#game-container.afternoon .flower::before { background-color: #FFD700; }
+#game-container.afternoon .rabbit { background-color: #C0C0C0; }
+#game-container.afternoon .rabbit::before, #game-container.afternoon .rabbit::after { background-color: #C0C0C0; }
+#game-container.afternoon .bird { background-color: #8B4513; }
+#game-container.afternoon .bird::before, #game-container.afternoon .bird::after { background-color: #A0522D; }
+#game-container.afternoon .stream { background: linear-gradient(to right, #6495ED, #4682B4); }
+#game-container.afternoon .stream::before { background: rgba(255,255,255,0.2); }
 
-#game-container.night::before {
-    background: linear-gradient(to bottom, #191970, #000000); /* Azul escuro para preto */
-}
-#game-container.night::after { /* Lua */
-    background-color: #F0F8FF;
-    box-shadow: 0 0 40px #F0F8FF;
-    top: 80px;
-    right: 100px;
-    width: 60px;
-    height: 60px;
+
+#game-container.night::before { background: linear-gradient(to bottom, #191970, #000000); }
+#game-container.night::after {
+    background-color: #F0F8FF; box-shadow: 0 0 40px #F0F8FF;
+    top: 5vh; right: 8vw;
+    width: min(5vw, 60px); height: min(5vw, 60px);
+    min-width: 30px; min-height: 30px;
     border-radius: 50%;
 }
-#game-container.night > .grass {
-    background: linear-gradient(to top, #2F4F4F, #000000); /* Tons de cinza escuro e preto */
-}
-#game-container.night .tree .leaves {
-    background-color: #1C1C1C;
-    box-shadow: inset 0 0 10px rgba(0,0,0,0.7);
-}
-#game-container.night .tree .leaves::before,
-#game-container.night .tree .leaves::after {
-    background-color: #2E2E2E;
-}
-#game-container.night .flower {
-    border-color: #483D8B;
-    background-color: #6A5ACD;
-}
-#game-container.night .flower::before {
-    background-color: #8A2BE2;
-}
-#game-container.night .rabbit {
-    background-color: #696969;
-}
-#game-container.night .rabbit::before,
-#game-container.night .rabbit::after {
-    background-color: #696969;
-}
-#game-container.night .bird {
-    background-color: #2F4F4F;
-}
-#game-container.night .bird::before,
-#game-container.night .bird::after {
-    background-color: #4682B4;
-}
-#game-container.night .stream {
-    background: linear-gradient(to right, #2F4F4F, #483D8B);
-    box-shadow: inset 0 3px 6px rgba(0,0,0,0.5);
-}
-#game-container.night .stream::before {
-    background: rgba(255,255,255,0.1);
-}
+#game-container.night > .grass { background: linear-gradient(to top, #2F4F4F, #000000); }
+#game-container.night .tree .leaves { background-color: #1C1C1C; box-shadow: inset 0 0 0.5em rgba(0,0,0,0.7); }
+#game-container.night .tree .leaves::before, #game-container.night .tree .leaves::after { background-color: #2E2E2E; }
+#game-container.night .flower { border-color: #483D8B; background-color: #6A5ACD; }
+#game-container.night .flower::before { background-color: #8A2BE2; }
+#game-container.night .rabbit { background-color: #696969; }
+#game-container.night .rabbit::before, #game-container.night .rabbit::after { background-color: #696969; }
+#game-container.night .bird { background-color: #2F4F4F; }
+#game-container.night .bird::before, #game-container.night .bird::after { background-color: #4682B4; }
+#game-container.night .stream { background: linear-gradient(to right, #2F4F4F, #483D8B); box-shadow: inset 0 0.2em 0.4em rgba(0,0,0,0.5); }
+#game-container.night .stream::before { background: rgba(255,255,255,0.1); }
 
-#game-container.rain::before {
-    background: linear-gradient(to bottom, #778899, #696969); /* Céu nublado */
-}
-#game-container.rain::after { /* Sem sol/lua visível */
-    display: none;
-}
-#game-container.rain > .grass {
-    background: linear-gradient(to top, #2E8B57, #006400); /* Grama mais escura e úmida */
-}
-/* --- Estilos para Chuva --- */
-/* ... (Mantenha o resto dos estilos de chuva como estão) ... */
-
+#game-container.rain::before { background: linear-gradient(to bottom, #778899, #696969); }
+#game-container.rain::after { display: none; }
+#game-container.rain > .grass { background: linear-gradient(to top, #2E8B57, #006400); }
 .raindrop {
     position: absolute;
     width: 2px;
-    height: 15px; /* Aumentei um pouco a altura para ficar mais visível */
-    background-color: #ADD8E6; /* Azul claro para as gotas */
+    height: 15px;
+    background-color: #ADD8E6;
     border-radius: 2px;
     opacity: 0.7;
-    z-index: 20; /* Acima de tudo, exceto a tela de game over */
-    pointer-events: none; /* Para não interferir nos cliques */
-    /* A animação será controlada pelo JS para ser mais dinâmica */
+    z-index: 20;
+    pointer-events: none;
+    animation: fall 1s linear infinite;
 }
 
 @keyframes fall {
-    from {
-        transform: translateY(-20px); /* Começa um pouco acima do topo da tela */
-        opacity: 0.8;
-    }
-    to {
-        transform: translateY(100vh); /* Cai até o final da viewport */
-        opacity: 0; /* Desaparece ao chegar ao fim */
-    }
+    from { transform: translateY(-20px); opacity: 0.8; }
+    to { transform: translateY(100vh); opacity: 0; }
 }
 
-#game-container.windy .cloud {
-    animation-duration: 15s !important; /* Nuvens mais rápidas */
-}
+#game-container.windy .cloud { animation-duration: 15s !important; }
+
 
 /* ---------------------------------------------------- */
-/* --- MEDIA QUERIES PARA RESPONSIVIDADE --- */
+/* --- MEDIA QUERIES PARA RESPONSIVIDADE OTIMIZADA --- */
 /* ---------------------------------------------------- */
 
-/* Para telas grandes (desktops maiores que 1200px) - Poucas mudanças do padrão */
-@media (min-width: 1201px) {
-    #start-screen h1 { font-size: 5em; }
-    #start-screen p { font-size: 2.2em; }
-    #start-button { font-size: 2em; padding: 22px 45px; }
+@media (min-width: 769px) {
+    #score, #level, #missed-fruits, #timer { font-size: 1.1em; padding: 0.6em 1em; }
+    #score { top: 2vh; left: 2vw; }
+    #level { top: 2vh; left: 15vw; }
+    #missed-fruits { top: 2vh; left: 28vw; }
+    #timer { top: 2vh; right: 2vw; }
 
-    #basket { width: 200px; height: 110px; } /* Cesta um pouco maior */
-    .fruit { width: 50px; height: 50px; } /* Frutas um pouco maiores */
-    /* Ajustes para frutas específicas para manter proporções, se necessário */
-    .fruit.banana { width: 70px; height: 35px; }
-    .fruit.grapes { width: 30px; height: 30px; }
-    .fruit.pear { width: 45px; height: 60px; }
-    .fruit.papaya { width: 55px; height: 75px; }
-    .fruit.watermelon { width: 65px; height: 65px; }
-    .fruit.melon { width: 60px; height: 60px; }
-
-    #score, #level, #missed-fruits, #timer { font-size: 1.4em; padding: 12px 20px; }
-
-    #game-over-screen h1 { font-size: 5em; }
-    #game-over-screen p { font-size: 2.5em; }
-    #restart-button { font-size: 1.8em; padding: 20px 40px; }
+    .tree { width: min(12vw, 180px); height: min(25vw, 300px); }
+    .rabbit { width: min(5vw, 80px); height: min(3.5vw, 50px); bottom: min(3vw, 40px); }
+    .bird { width: min(4vw, 60px); height: min(2vw, 30px); }
+    .cloud.small { width: min(8vw, 100px); height: min(4vw, 50px); }
+    .cloud.medium { width: min(12vw, 150px); height: min(6vw, 80px); }
+    .stream { height: min(5vw, 60px); }
+    .flower { width: min(2.5vw, 30px); height: min(2.5vw, 30px); }
 }
 
-
-/* Para tablets e desktops médios (entre 769px e 1200px) - Estilo padrão já deve se sair bem */
-@media (min-width: 769px) and (max-width: 1200px) {
-    /* Manter os tamanhos padrão ou ajustar levemente se necessário */
-    #start-screen h1 { font-size: 3.5em; }
-    #start-screen p { font-size: 1.6em; }
-    #start-button { font-size: 1.6em; padding: 18px 35px; }
-
-    #basket { width: 160px; height: 90px; } /* Ligeiramente menor que o padrão */
-    .fruit { width: 40px; height: 40px; }
-    /* Ajustes para frutas específicas */
-    .fruit.banana { width: 55px; height: 28px; }
-    .fruit.grapes { width: 22px; height: 22px; }
-    .fruit.pear { width: 35px; height: 50px; }
-    .fruit.papaya { width: 45px; height: 65px; }
-    .fruit.watermelon { width: 55px; height: 55px; }
-    .fruit.melon { width: 50px; height: 50px; }
-
-    #score, #level, #missed-fruits, #timer { font-size: 1.1em; padding: 9px 15px; }
-
-    #game-over-screen h1 { font-size: 3.5em; }
-    #game-over-screen p { font-size: 1.8em; }
-    #restart-button { font-size: 1.4em; padding: 15px 30px; }
-}
-
-
-/* Para tablets em retrato e celulares grandes (entre 481px e 768px) */
 @media (min-width: 481px) and (max-width: 768px) {
-    #start-screen h1 {
-        font-size: 2.8em;
+    #start-screen h1 { font-size: 2.8em; }
+    #start-screen p { font-size: 1em; }
+    #start-button { font-size: 1em; padding: 0.8em 2em; }
+
+    #score, #level, #missed-fruits, #timer {
+        font-size: 0.9em;
+        padding: 0.4em 0.8em;
     }
-    #start-screen p {
-        font-size: 1.3em;
-    }
-    #start-button {
-        padding: 15px 30px;
-        font-size: 1.4em;
-    }
+    #score { top: 1.5vh; left: 1.5vw; }
+    #level { top: 1.5vh; left: auto; right: 1.5vw; }
+    #missed-fruits { top: 5.5vh; left: 1.5vw; }
+    #timer { top: 5.5vh; left: auto; right: 1.5vw; }
 
     #basket {
-        width: 130px; /* Cesta menor para celular */
-        height: 75px;
-        border-radius: 0 0 55px 55px;
-        border: 4px solid #654321;
+        width: min(18vw, 140px); height: min(10vw, 80px);
+        min-width: 80px; min-height: 50px;
+        bottom: 4vh;
     }
+    .fruit { width: min(4.5vw, 40px); height: min(4.5vw, 40px); min-width: 30px; min-height: 30px; }
+    .fruit.banana { width: min(6vw, 50px); height: min(3vw, 25px); }
+    .fruit.grapes { width: min(2.5vw, 25px); height: min(2.5vw, 25px); }
 
-    .fruit {
-        width: 38px; /* Frutas menores */
-        height: 38px;
-    }
-
-    /* Ajuste para frutas específicas */
-    .fruit.banana { width: 50px; height: 28px; }
-    .fruit.grapes { width: 22px; height: 22px; box-shadow: -4px -4px 0 0 #A020F0, 4px 4px 0 0 #A020F0, 0 4px 0 0 #A020F0, -4px 0 0 0 #A020F0, 0 -4px 0 0 #A020F0; }
-    .fruit.pear { width: 32px; height: 48px; }
-    .fruit.papaya { width: 42px; height: 60px; }
-    .fruit.watermelon { width: 52px; height: 52px; }
-    .fruit.watermelon::before { width: 35px; height: 35px; }
-    .fruit.melon { width: 48px; height: 48px; }
-    .fruit.melon::before { width: 38px; height: 38px; border: 2px solid rgba(255,255,255,0.4); }
-
-    /* Ajustes para o placar para evitar sobreposição */
-    #score, #level, #missed-fruits, #timer {
-        padding: 5px 10px; /* Reduzir o padding */
-        font-size: 0.9em; /* Reduzir ainda mais a fonte */
-        top: 0.5%; /* Mover um pouco mais para cima */
-    }
-    #score { left: 1%; }
-    #level { left: auto; right: 1%; } /* Mover o nível para a direita */
-    #missed-fruits { left: 1%; top: 6%; } /* Mover para baixo e para a esquerda */
-    #timer { right: 1%; top: 6%; } /* Mover para baixo e para a direita */
-
-    /* Ajustes para animais e árvores menores */
-    .bird { width: 35px; height: 18px; }
-    .bird::before, .bird::after { width: 25px; height: 12px; }
-    .rabbit { width: 55px; height: 38px; bottom: 40px; }
-    .rabbit::before, .rabbit::after { width: 14px; height: 32px; }
-    .tree { width: 120px; height: 200px; bottom: 6%; }
-    .tree .trunk { width: 35px; height: 120px; }
-    .tree .leaves { width: 120px; height: 120px; bottom: 90px; }
-    .tree .leaves::before, .tree .leaves::after { width: 85px; height: 85px; }
-    .flower { width: 22px; height: 22px; border: 2.5px solid #800080; }
-    .flower::before { width: 11px; height: 11px; }
-
-    /* Nuvens e Riacho */
-    .cloud.small { width: 70px; height: 35px; }
-    .cloud.small::before { width: 45px; height: 45px; top: -18px; left: 8px; }
-    .cloud.small::after { width: 50px; height: 50px; top: -9px; right: 8px; }
-    .cloud.medium { width: 100px; height: 50px; }
-    .cloud.medium::before { width: 60px; height: 60px; top: -25px; left: 15px; }
-    .cloud.medium::after { width: 65px; height: 65px; top: -18px; right: 15px; }
-    .stream { height: 50px; }
-    .stream::before { height: 18px; }
-
-    #game-over-screen h1 { font-size: 3.5em; }
-    #game-over-screen p { font-size: 1.8em; }
-    #restart-button { padding: 15px 30px; font-size: 1.4em; }
+    .tree { width: min(18vw, 120px); height: min(30vw, 200px); bottom: 4%; }
+    .rabbit { width: min(7vw, 50px); height: min(4.5vw, 35px); bottom: 3vw; }
+    .bird { width: min(6vw, 40px); height: min(3vw, 20px); }
+    .cloud.small { width: min(10vw, 80px); height: min(5vw, 40px); }
+    .cloud.medium { width: min(15vw, 120px); height: min(7.5vw, 60px); }
+    .stream { height: min(6vw, 50px); }
+    .flower { width: min(3vw, 25px); height: min(3vw, 25px); }
 }
 
-
-/* Para celulares pequenos (até 480px) */
 @media (max-width: 480px) {
-    #start-screen h1 {
-        font-size: 2em;
+    #start-screen h1 { font-size: 2.2em; }
+    #start-screen p { font-size: 0.9em; }
+    #start-button { font-size: 0.9em; padding: 0.6em 1.5em; }
+
+    #score, #level, #missed-fruits, #timer {
+        font-size: 0.8em;
+        padding: 0.3em 0.6em;
     }
-    #start-screen p {
-        font-size: 1em;
-    }
-    #start-button {
-        padding: 10px 20px;
-        font-size: 1.2em;
-    }
+    #score { top: 1vh; left: 1vw; }
+    #level { top: 1vh; left: auto; right: 1vw; }
+    #missed-fruits { top: 4.5vh; left: 1vw; }
+    #timer { top: 4.5vh; left: auto; right: 1vw; }
 
     #basket {
-        width: 90px; /* Cesta ainda menor */
-        height: 55px;
-        border-radius: 0 0 40px 40px;
-        border: 3px solid #654321;
+        width: min(25vw, 100px); height: min(14vw, 60px);
+        min-width: 70px; min-height: 45px;
+        bottom: 3vh;
+        border-width: min(0.3vw, 4px);
     }
-    .fruit {
-        width: 28px; /* Frutas ainda menores */
-        height: 28px;
-    }
-    /* Ajuste para frutas específicas */
-    .fruit.banana { width: 40px; height: 22px; }
-    .fruit.grapes { width: 18px; height: 18px; box-shadow: -3px -3px 0 0 #A020F0, 3px 3px 0 0 #A020F0, 0 3px 0 0 #A020F0, -3px 0 0 0 #A020F0, 0 -3px 0 0 #A020F0; }
-    .fruit.pear { width: 28px; height: 40px; }
-    .fruit.papaya { width: 35px; height: 50px; }
-    .fruit.watermelon { width: 45px; height: 45px; }
-    .fruit.watermelon::before { width: 28px; height: 28px; }
-    .fruit.melon { width: 40px; height: 40px; }
-    .fruit.melon::before { width: 30px; height: 30px; border: 1.5px solid rgba(255,255,255,0.4); }
+    .fruit { width: min(6vw, 35px); height: min(6vw, 35px); min-width: 25px; min-height: 25px; }
+    .fruit.banana { width: min(8vw, 45px); height: min(4vw, 22px); }
+    .fruit.grapes { width: min(3.5vw, 20px); height: min(3.5vw, 20px); }
 
-    /* Ajustes para o placar para evitar sobreposição */
-    #score, #level, #missed-fruits, #timer {
-        padding: 3px 6px; /* Reduzir ainda mais o padding */
-        font-size: 0.7em; /* Fonte ainda menor */
-        top: 0.5%; /* Manter no topo */
-    }
-    #score { left: 0.5%; }
-    #level { left: auto; right: 0.5%; } /* Nível à direita */
-    #missed-fruits { left: 0.5%; top: 4%; } /* Abaixo da pontuação */
-    #timer { right: 0.5%; top: 4%; } /* Abaixo do nível */
-
-    /* Reduzir um pouco o tamanho dos animais e árvores para telas muito pequenas */
-    .bird { width: 25px; height: 12px; }
-    .bird::before, .bird::after { width: 15px; height: 8px; }
-    .rabbit { width: 40px; height: 30px; bottom: 25px;}
-    .rabbit::before, .rabbit::after { width: 10px; height: 20px; }
-    .tree { width: 80px; height: 150px; bottom: 3%; }
-    .tree .trunk { width: 25px; height: 80px; }
-    .tree .leaves { width: 80px; height: 80px; bottom: 60px; }
-    .tree .leaves::before, .tree .leaves::after { width: 60px; height: 60px; }
-    .flower { width: 18px; height: 18px; border: 2px solid #800080; }
-    .flower::before { width: 9px; height: 9px; }
-
-
-    .cloud.small { width: 50px; height: 25px; }
-    .cloud.small::before { width: 35px; height: 35px; top: -12px; left: 3px; }
-    .cloud.small::after { width: 40px; height: 40px; top: -6px; right: 3px; }
-    .cloud.medium { width: 70px; height: 35px; }
-    .cloud.medium::before { width: 45px; height: 45px; top: -18px; left: 8px; }
-    .cloud.medium::after { width: 50px; height: 50px; top: -12px; right: 8px; }
-    .stream { height: 30px; }
-    .stream::before { height: 12px; }
-
-    #game-over-screen h1 { font-size: 2.5em; }
-    #game-over-screen p { font-size: 1.2em; }
-    #restart-button { padding: 10px 20px; font-size: 1.2em; }
+    .tree { width: min(20vw, 100px); height: min(38vw, 160px); bottom: 2%; }
+    .tree .trunk { width: min(4vw, 20px); height: min(20vw, 80px); }
+    .tree .leaves { width: min(18vw, 90px); height: min(18vw, 90px); bottom: min(12vw, 50px); }
+    .rabbit, .bird, .flower, .cloud, .stream { display: none; }
 }
 
-/* Landscape mode for mobile devices (muito pequenas) */
-@media screen and (orientation: landscape) and (max-height: 480px) {
-    /* Ajustes específicos para celulares em modo paisagem com altura limitada */
-    #score, #level, #missed-fruits, #timer {
-        top: 0.5%;
-        font-size: 0.6em; /* Fonte ainda menor para landscape */
-        padding: 2px 4px;
-    }
+@media screen and (orientation: landscape) and (max-height: 576px) {
+    #start-screen h1 { font-size: 2.2em; }
+    #start-screen p { font-size: 0.9em; }
+    #start-button { font-size: 0.9em; padding: 0.6em 1.5em; }
 
-    #score { left: 0.5%; }
-    #level { left: auto; right: 0.5%; }
-    #missed-fruits { left: 0.5%; top: 3%; } /* Abaixo da pontuação */
-    #timer { right: 0.5%; top: 3%; } /* Abaixo do nível */
+    #score, #level, #missed-fruits, #timer {
+        font-size: 0.8em;
+        padding: 0.2em 0.4em;
+    }
+    #score { top: 0.5vh; left: 0.5vw; }
+    #level { top: 0.5vh; left: 18vw; }
+    #missed-fruits { top: 0.5vh; left: 36vw; }
+    #timer { top: 0.5vh; right: 0.5vw; }
 
     #basket {
-        width: 80px;
-        height: 50px;
-        bottom: 2%; /* Mais perto da borda */
+        width: min(15vw, 90px); height: min(8vw, 50px);
+        min-width: 60px; min-height: 40px;
+        bottom: 1.5vh;
+        border-width: min(0.3vw, 3px);
     }
 
-    .fruit {
-        width: 25px;
-        height: 25px;
+    .fruit { width: min(3.5vw, 30px); height: min(3.5vw, 30px); min-width: 18px; min-height: 18px; }
+    .fruit.banana { width: min(4vw, 30px); height: min(2vw, 15px); }
+    .fruit.grapes { width: min(1.8vw, 15px); height: min(1.8vw, 15px); }
+
+    .tree, .rabbit, .bird, .cloud, .stream, #flowers-container .flower { display: none; }
+}
+
+
+/* --- Estilos para a Tela Inicial (Start Screen) - Decoração --- */
+.start-decoration {
+    position: relative;
+    width: min(80vw, 400px);
+    height: min(40vw, 200px);
+    min-width: 250px;
+    min-height: 120px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    margin-bottom: 2em;
+    z-index: 201;
+}
+
+.start-basket {
+    position: relative;
+    width: min(15vw, 150px);
+    height: min(8vw, 90px);
+    min-width: 90px;
+    min-height: 50px;
+    background-color: #A0522D;
+    border-radius: 0 0 min(7.5vw, 75px) min(7.5vw, 75px);
+    border: min(0.4vw, 5px) solid #654321;
+    box-shadow: inset 0 min(-0.8vw, -10px) min(1.2vw, 15px) rgba(0, 0, 0, 0.4);
+    background-image: radial-gradient(circle at top, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%);
+    z-index: 1;
+}
+
+.start-fruit {
+    position: absolute;
+    border-radius: 50%;
+    box-shadow: 0.15em 0.15em 0.3em rgba(0, 0, 0, 0.3);
+    border: 0.1em solid rgba(0,0,0,0.1);
+    z-index: 2;
+    transform-origin: bottom center;
+    animation: swing 3s ease-in-out infinite alternate;
+}
+
+.start-apple {
+    background: radial-gradient(circle at 30% 30%, #FF6347, #FF0000);
+    width: min(4.5vw, 50px); height: min(4.5vw, 50px);
+    min-width: 30px; min-height: 30px;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    bottom: min(4vw, 40px); left: 10%;
+    animation-delay: 0.5s;
+}
+
+.start-banana {
+    background: linear-gradient(to right, #FFD700, #DAA520);
+    width: min(6vw, 70px); height: min(3vw, 35px);
+    min-width: 40px; min-height: 20px;
+    border-radius: 50% 50% 50% 50% / 30% 70% 30% 70%;
+    transform: rotate(20deg);
+    bottom: min(3vw, 30px); left: 30%;
+    animation-delay: 1s;
+}
+
+.start-grapes {
+    background-color: #800080;
+    width: min(2.5vw, 30px); height: min(2.5vw, 30px);
+    min-width: 18px; min-height: 18px;
+    box-shadow: -0.3em -0.3em 0 0 #A020F0, 0.3em 0.3em 0 0 #A020F0, 0 0.3em 0 0 #A020F0, -0.3em 0 0 0 #A020F0, 0 -0.3em 0 0 #A020F0;
+    border-radius: 50%;
+    bottom: min(5vw, 50px); right: 20%;
+    animation-delay: 1.5s;
+}
+
+.start-pear {
+    background: linear-gradient(to top, #ADFF2F, #9ACD32);
+    width: min(4vw, 45px); height: min(5.5vw, 60px);
+    min-width: 25px; min-height: 35px;
+    border-radius: 50% 50% 50% 50% / 70% 70% 30% 30%;
+    bottom: min(2vw, 20px); left: 60%;
+    animation-delay: 2s;
+}
+
+.start-watermelon {
+    background: radial-gradient(circle at center, #32CD32, #228B22);
+    width: min(5.5vw, 65px); height: min(5.5vw, 65px);
+    min-width: 35px; min-height: 35px;
+    border-radius: 50%;
+    bottom: min(1vw, 10px); left: 45%;
+    animation-delay: 2.5s;
+    position: absolute;
+    overflow: hidden;
+}
+.start-watermelon::before {
+    content: '';
+    position: absolute;
+    top: min(1vw, 10px); left: min(1vw, 10px);
+    width: min(3vw, 40px); height: min(3vw, 40px);
+    min-width: 20px; min-height: 20px;
+    background: repeating-linear-gradient(45deg, transparent, transparent min(0.4vw, 5px), rgba(0,0,0,0.2) min(0.4vw, 5px), rgba(0,0,0,0.2) min(0.8vw, 10px));
+    border-radius: 50%;
+}
+
+
+@keyframes swing {
+    0% { transform: rotate(-5deg); }
+    50% { transform: rotate(5deg); }
+    100% { transform: rotate(-5deg); }
+}
+
+@media (max-width: 480px) {
+    .start-decoration {
+        width: min(90vw, 300px);
+        height: min(45vw, 150px);
+        min-width: 200px;
+        min-height: 100px;
+        margin-bottom: 1.5em;
     }
-    /* Ajustes de frutas específicos, se necessário */
-    .fruit.banana { width: 35px; height: 18px; }
-    .fruit.grapes { width: 15px; height: 15px; }
-
-
-    /* Reduzir ou remover elementos de cena para dar mais espaço */
-    .tree {
-        width: 60px;
-        height: 100px;
-        bottom: 1%;
+    .start-basket {
+        width: min(25vw, 120px);
+        height: min(12vw, 70px);
+        min-width: 80px;
+        min-height: 45px;
+        border-width: min(0.3vw, 4px);
     }
-    .tree .trunk { width: 20px; height: 50px; }
-    .tree .leaves { width: 60px; height: 60px; bottom: 40px; }
+    .start-fruit {
+        width: min(7vw, 35px); height: min(7vw, 35px);
+        min-width: 20px; min-height: 20px;
+    }
+    .start-apple { bottom: min(6vw, 30px); left: 5%; }
+    .start-banana { width: min(8vw, 40px); height: min(4vw, 20px); bottom: min(5vw, 25px); left: 25%; }
+    .start-grapes { width: min(3vw, 20px); height: min(3vw, 20px); bottom: min(8vw, 40px); right: 10%; }
+    .start-pear { width: min(5vw, 25px); height: min(7vw, 35px); bottom: min(4vw, 20px); left: 55%; }
+    .start-watermelon { width: min(7vw, 35px); height: min(7vw, 35px); bottom: min(2vw, 10px); left: 40%; }
+}
 
-    .rabbit { width: 30px; height: 20px; bottom: 15px;}
-    /* Itens removidos para telas pequenas em paisagem para otimização */
-    .flower { display: none; }
-    .bird { display: none; }
-    .cloud { display: none; }
-    .stream { display: none; }
-
-    #start-screen h1 { font-size: 1.8em; }
-    #start-screen p { font-size: 0.9em; }
-    #start-button { font-size: 1em; padding: 8px 15px; }
-
-    #game-over-screen h1 { font-size: 2em; }
-    #game-over-screen p { font-size: 1em; }
-    #restart-button { font-size: 1em; padding: 8px 15px; }
+@media screen and (orientation: landscape) and (max-height: 480px) {
+    .start-decoration {
+        width: min(60vw, 350px);
+        height: min(30vh, 100px);
+        min-width: 200px;
+        min-height: 80px;
+        margin-bottom: 1em;
+    }
+    .start-basket {
+        width: min(12vw, 100px);
+        height: min(6vh, 40px);
+        min-width: 70px;
+        min-height: 35px;
+        border-width: min(0.2vw, 3px);
+    }
+    .start-fruit {
+        width: min(3vw, 25px); height: min(3vw, 25px);
+        min-width: 18px; min-height: 18px;
+    }
+    .start-apple { bottom: min(3vh, 20px); left: 8%; }
+    .start-banana { width: min(4vw, 30px); height: min(2vw, 15px); bottom: min(2.5vh, 15px); left: 28%; }
+    .start-grapes { width: min(1.8vw, 15px); height: min(1.8vw, 15px); bottom: min(4vh, 25px); right: 15%; }
+    .start-pear { width: min(2.5vw, 20px); height: min(3.5vw, 28px); bottom: min(1.5vh, 10px); left: 58%; }
+    .start-watermelon { width: min(4vw, 30px); height: min(4vw, 30px); bottom: min(0.5vh, 5px); left: 43%; }
 }
