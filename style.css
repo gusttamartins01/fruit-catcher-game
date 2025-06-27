@@ -12,19 +12,25 @@ html, body {
     align-items: center;
     min-height: 100vh;
     font-family: 'Poppins', sans-serif; /* Nova fonte principal */
-    font-size: 16px; /* Tamanho base em pixels para body, 'em' irá usar como referência */
     color: #fff;
     text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.8); /* Sombra mais pronunciada */
+    background-color: #f0f0f0; /* Fundo para quando o game-container estiver hidden */
 }
 
-/* Base de escalonamento responsiva para o jogo inteiro */
-body { font-size: min(1.2vw, 18px); }
+/* Base de escalonamento responsiva para o jogo inteiro (zoom menor) */
+/* Usando 'rem' para ser relativo ao root font-size, que é ajustado com min()/max() */
+html {
+    font-size: 16px; /* Base rem */
+}
+body {
+    font-size: min(1.1vw, 16px); /* Geralmente menor em telas maiores */
+}
 
-@media (max-width: 1200px) { body { font-size: min(1.5vw, 17px); } }
-@media (max-width: 992px) { body { font-size: min(1.8vw, 16px); } }
-@media (max-width: 768px) { body { font-size: min(2.2vw, 15px); } }
-@media (max-width: 576px) { body { font-size: min(2.8vw, 14px); } }
-@media screen and (orientation: landscape) and (max-height: 576px) { body { font-size: min(2.5vh, 14px); } }
+@media (max-width: 1200px) { body { font-size: min(1.3vw, 15px); } }
+@media (max-width: 992px) { body { font-size: min(1.6vw, 14px); } }
+@media (max-width: 768px) { body { font-size: min(2.0vw, 13px); } }
+@media (max-width: 576px) { body { font-size: min(2.5vw, 12px); } }
+@media screen and (orientation: landscape) and (max-height: 576px) { body { font-size: min(2.2vh, 12px); } }
 
 
 /* --- Tela Inicial (Start Screen) --- */
@@ -40,7 +46,7 @@ body { font-size: min(1.2vw, 18px); }
     justify-content: center;
     align-items: center;
     color: #fff;
-    font-size: 1.5em;
+    font-size: 1.5em; /* Relativo ao font-size do body */
     text-align: center;
     z-index: 200;
 }
@@ -51,6 +57,7 @@ body { font-size: min(1.2vw, 18px); }
     margin-bottom: 0.5em;
     color: #FFD700;
     text-shadow: 0.2em 0.2em 0.3em rgba(0, 0, 0, 0.8);
+    line-height: 1.2; /* Para evitar corte em telas pequenas */
 }
 
 #start-screen p {
@@ -110,9 +117,8 @@ body { font-size: min(1.2vw, 18px); }
     position: absolute;
     top: 8vh;
     right: 8vw;
-    width: min(8vw, 100px);
-    height: min(8vw, 100px);
-    min-width: 50px; min-height: 50px;
+    width: clamp(50px, 8vw, 100px); /* Usando clamp para min/max/ideal */
+    height: clamp(50px, 8vw, 100px);
     background-color: #FFD700;
     border-radius: 50%;
     box-shadow: 0 0 40px #FFD700;
@@ -134,9 +140,8 @@ body { font-size: min(1.2vw, 18px); }
 .tree {
     position: absolute;
     bottom: 5%;
-    width: min(12vw, 180px);
-    height: min(25vw, 300px);
-    min-width: 80px; min-height: 150px;
+    width: clamp(80px, 12vw, 180px); /* Ajustado com clamp */
+    height: clamp(150px, 25vw, 300px); /* Ajustado com clamp */
     z-index: 1;
     transition: all 1s ease-in-out;
 }
@@ -147,10 +152,9 @@ body { font-size: min(1.2vw, 18px); }
 .tree .trunk {
     position: absolute;
     bottom: 0;
-    left: calc(50% - min(1.5vw, 20px));
-    width: min(3vw, 40px);
-    height: min(15vw, 150px);
-    min-width: 20px; min-height: 80px;
+    left: calc(50% - clamp(10px, 1.5vw, 20px)); /* Ajustado com clamp */
+    width: clamp(20px, 3vw, 40px);
+    height: clamp(80px, 15vw, 150px);
     background-color: #8B4513;
     border-radius: 0.5em;
     box-shadow: inset 0 0 0.5em rgba(0,0,0,0.4);
@@ -159,10 +163,9 @@ body { font-size: min(1.2vw, 18px); }
 
 .tree .leaves {
     position: absolute;
-    bottom: min(8vw, 120px);
-    width: min(12vw, 150px);
-    height: min(12vw, 150px);
-    min-width: 80px; min-height: 80px;
+    bottom: clamp(60px, 8vw, 120px); /* Ajustado com clamp */
+    width: clamp(70px, 12vw, 150px);
+    height: clamp(70px, 12vw, 150px);
     background-color: #228B22;
     border-radius: 50%;
     box-shadow: inset 0 0 0.8em rgba(0,0,0,0.4);
@@ -174,9 +177,8 @@ body { font-size: min(1.2vw, 18px); }
     position: absolute;
     background-color: #3CB371;
     border-radius: 50%;
-    width: min(8vw, 100px);
-    height: min(8vw, 100px);
-    min-width: 50px; min-height: 50px;
+    width: clamp(40px, 8vw, 100px); /* Ajustado com clamp */
+    height: clamp(40px, 8vw, 100px);
     transition: background-color 1s ease-in-out;
 }
 
@@ -194,9 +196,8 @@ body { font-size: min(1.2vw, 18px); }
 }
 .flower {
     position: absolute;
-    width: min(2.5vw, 30px);
-    height: min(2.5vw, 30px);
-    min-width: 15px; min-height: 15px;
+    width: clamp(10px, 2.5vw, 30px); /* Ajustado com clamp */
+    height: clamp(10px, 2.5vw, 30px);
     background-color: #FF69B4;
     border-radius: 50%;
     border: 0.2em solid #800080;
@@ -216,8 +217,7 @@ body { font-size: min(1.2vw, 18px); }
 
 .bird {
     position: absolute;
-    width: min(4vw, 60px); height: min(2vw, 30px);
-    min-width: 25px; min-height: 12px;
+    width: clamp(20px, 4vw, 60px); height: clamp(10px, 2vw, 30px); /* Ajustado com clamp */
     background-color: #A0522D;
     border-radius: 50%;
     top: 10%;
@@ -232,8 +232,7 @@ body { font-size: min(1.2vw, 18px); }
     position: absolute;
     background-color: #654321;
     border-radius: 50% 50% 0 0;
-    width: min(2.5vw, 40px); height: min(1.25vw, 20px);
-    min-width: 15px; min-height: 8px;
+    width: clamp(12px, 2.5vw, 40px); height: clamp(6px, 1.25vw, 20px); /* Ajustado con clamp */
     transition: background-color 1s ease-in-out;
 }
 .bird::before { top: -0.8vw; left: 0.5vw; transform: rotate(-20deg); }
@@ -250,11 +249,10 @@ body { font-size: min(1.2vw, 18px); }
 
 .rabbit {
     position: absolute;
-    width: min(5vw, 80px); height: min(3.5vw, 50px);
-    min-width: 40px; min-height: 25px;
+    width: clamp(30px, 5vw, 80px); height: clamp(20px, 3.5vw, 50px); /* Ajustado con clamp */
     background-color: #D3D3D3;
     border-radius: 50%;
-    bottom: min(3vw, 40px);
+    bottom: clamp(20px, 3vw, 40px); /* Ajustado con clamp */
     left: 10%;
     z-index: 3;
     animation: hop 20s linear infinite;
@@ -265,8 +263,7 @@ body { font-size: min(1.2vw, 18px); }
     content: '';
     position: absolute;
     background-color: #D3D3D3;
-    width: min(1.2vw, 20px); height: min(3vw, 40px);
-    min-width: 10px; min-height: 20px;
+    width: clamp(8px, 1.2vw, 20px); height: clamp(15px, 3vw, 40px); /* Ajustado con clamp */
     border-radius: 50% 50% 0 0;
     top: -2vw;
     transition: background-color 1s ease-in-out;
@@ -302,38 +299,32 @@ body { font-size: min(1.2vw, 18px); }
 }
 
 .cloud.small {
-    width: min(8vw, 100px); height: min(4vw, 50px);
-    min-width: 50px; min-height: 25px;
+    width: clamp(40px, 8vw, 100px); height: clamp(20px, 4vw, 50px); /* Ajustado con clamp */
     animation-duration: 25s;
 }
 .cloud.small::before {
     content: ''; position: absolute; background: #fff; border-radius: 50%;
-    width: min(5vw, 60px); height: min(5vw, 60px);
-    min-width: 30px; min-height: 30px;
+    width: clamp(25px, 5vw, 60px); height: clamp(25px, 5vw, 60px); /* Ajustado con clamp */
     top: -1.5vw; left: 0.8vw;
 }
 .cloud.small::after {
     content: ''; position: absolute; background: #fff; border-radius: 50%;
-    width: min(6vw, 70px); height: min(6vw, 70px);
-    min-width: 35px; min-height: 35px;
+    width: clamp(30px, 6vw, 70px); height: clamp(30px, 6vw, 70px); /* Ajustado con clamp */
     top: -0.8vw; right: 0.8vw;
 }
 
 .cloud.medium {
-    width: min(12vw, 150px); height: min(6vw, 80px);
-    min-width: 80px; min-height: 40px;
+    width: clamp(60px, 12vw, 150px); height: clamp(30px, 6vw, 80px); /* Ajustado con clamp */
     animation-duration: 35s;
 }
 .cloud.medium::before {
     content: ''; position: absolute; background: #fff; border-radius: 50%;
-    width: min(7vw, 90px); height: min(7vw, 90px);
-    min-width: 45px; min-height: 45px;
+    width: clamp(35px, 7vw, 90px); height: clamp(35px, 7vw, 90px); /* Ajustado con clamp */
     top: -2.5vw; left: 1.5vw;
 }
 .cloud.medium::after {
     content: ''; position: absolute; background: #fff; border-radius: 50%;
-    width: min(8vw, 100px); height: min(8vw, 100px);
-    min-width: 50px; min-height: 50px;
+    width: clamp(40px, 8vw, 100px); height: clamp(40px, 8vw, 100px); /* Ajustado con clamp */
     top: -1.5vw; right: 1.5vw;
 }
 
@@ -347,8 +338,7 @@ body { font-size: min(1.2vw, 18px); }
     bottom: 48%;
     left: 0;
     width: 100%;
-    height: min(5vw, 60px);
-    min-height: 30px;
+    height: clamp(20px, 5vw, 60px); /* Ajustado con clamp */
     background: linear-gradient(to right, #4682B4, #6A5ACD);
     border-radius: 0 0 50% 50%;
     z-index: 1;
@@ -360,11 +350,10 @@ body { font-size: min(1.2vw, 18px); }
 .stream::before {
     content: '';
     position: absolute;
-    top: min(0.8vw, 10px);
+    top: clamp(5px, 0.8vw, 10px); /* Ajustado con clamp */
     left: 0;
     width: 100%;
-    height: min(1.5vw, 20px);
-    min-height: 10px;
+    height: clamp(8px, 1.5vw, 20px); /* Ajustado con clamp */
     background: rgba(255,255,255,0.3);
     border-radius: 50%;
     filter: blur(0.3em);
@@ -376,20 +365,17 @@ body { font-size: min(1.2vw, 18px); }
     100% { transform: translateX(-2vw); }
 }
 
-/* Cesta - MODIFICADO PARA TRANSFORM: TRANSLATEX */
+/* Cesta - MODIFICADO PARA IR DE PONTA A PONTA */
 #basket {
     position: absolute;
     bottom: 3vh;
-    /* Removido 'left' fixo, agora controlado por transform */
-    width: min(14vw, 170px);
-    height: min(8vw, 95px);
-    min-width: 80px; min-height: 50px;
+    width: clamp(70px, 14vw, 170px); /* Ajustado com clamp */
+    height: clamp(45px, 8vw, 95px); /* Ajustado com clamp */
     background-color: #A0522D;
-    border-radius: 0 0 min(7vw, 85px) min(7vw, 85px);
-    border: min(0.5vw, 6px) solid #654321;
-    box-shadow: inset 0 min(-1vw, -12px) min(1.5vw, 18px) rgba(0, 0, 0, 0.4);
+    border-radius: 0 0 clamp(35px, 7vw, 85px) clamp(35px, 7vw, 85px); /* Ajustado com clamp */
+    border: clamp(2px, 0.5vw, 6px) solid #654321; /* Ajustado com clamp */
+    box-shadow: inset 0 clamp(-5px, -1vw, -12px) clamp(8px, 1.5vw, 18px) rgba(0, 0, 0, 0.4); /* Ajustado com clamp */
     z-index: 10;
-    /* Transição para a propriedade transform, se desejar um movimento mais suave */
     transition: transform 0.05s linear; /* Ajuste para mais ou menos suavidade */
     background-image: radial-gradient(circle at top, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%);
 
@@ -401,8 +387,7 @@ body { font-size: min(1.2vw, 18px); }
 /* Frutas (animação de queda via CSS) */
 .fruit {
     position: absolute;
-    width: min(4vw, 50px); height: min(4vw, 50px);
-    min-width: 25px; min-height: 25px;
+    width: clamp(20px, 4vw, 50px); height: clamp(20px, 4vw, 50px); /* Ajustado com clamp */
     border-radius: 50%;
     top: -60px;
     z-index: 5;
@@ -424,34 +409,29 @@ body { font-size: min(1.2vw, 18px); }
 }
 .fruit.banana {
     background: linear-gradient(to right, #FFD700, #DAA520);
-    width: min(5.5vw, 70px); height: min(2.5vw, 35px);
-    min-width: 35px; min-height: 18px;
+    width: clamp(30px, 5.5vw, 70px); height: clamp(15px, 2.5vw, 35px); /* Ajustado com clamp */
     border-radius: 50% 50% 50% 50% / 30% 70% 30% 70%;
     transform: rotate(20deg);
 }
 .fruit.grapes {
     background-color: #800080;
-    width: min(2.2vw, 30px); height: min(2.2vw, 30px);
-    min-width: 15px; min-height: 15px;
+    width: clamp(10px, 2.2vw, 30px); height: clamp(10px, 2.2vw, 30px); /* Ajustado com clamp */
     box-shadow: -0.4em -0.4em 0 0 #A020F0, 0.4em 0.4em 0 0 #A020F0, 0 0.4em 0 0 #A020F0, -0.4em 0 0 0 #A020F0, 0 -0.4em 0 0 #A020F0;
     border-radius: 50%;
 }
 .fruit.pear {
     background: linear-gradient(to top, #ADFF2F, #9ACD32);
-    width: min(3.5vw, 45px); height: min(5vw, 60px);
-    min-width: 20px; min-height: 35px;
+    width: clamp(15px, 3.5vw, 45px); height: clamp(25px, 5vw, 60px); /* Ajustado com clamp */
     border-radius: 50% 50% 50% 50% / 70% 70% 30% 30%;
 }
 .fruit.papaya {
     background: radial-gradient(circle at center, #FFDAB9, #FF8C00);
-    width: min(4.5vw, 60px); height: min(6.5vw, 80px);
-    min-width: 30px; min-height: 45px;
+    width: clamp(20px, 4.5vw, 60px); height: clamp(30px, 6.5vw, 80px); /* Ajustado com clamp */
     border-radius: 50% 50% 50% 50% / 70% 70% 30% 30%;
 }
 .fruit.watermelon {
     background: radial-gradient(circle at center, #32CD32, #228B22);
-    width: min(5vw, 65px); height: min(5vw, 65px);
-    min-width: 30px; min-height: 30px;
+    width: clamp(25px, 5vw, 65px); height: clamp(25px, 5vw, 65px); /* Ajustado com clamp */
     border-radius: 50%;
     position: relative;
     overflow: hidden;
@@ -459,16 +439,14 @@ body { font-size: min(1.2vw, 18px); }
 .fruit.watermelon::before {
     content: '';
     position: absolute;
-    top: min(1vw, 10px); left: min(1vw, 10px);
-    width: min(3vw, 40px); height: min(3vw, 40px);
-    min-width: 20px; min-height: 20px;
-    background: repeating-linear-gradient(45deg, transparent, transparent min(0.4vw, 5px), rgba(0,0,0,0.2) min(0.4vw, 5px), rgba(0,0,0,0.2) min(0.8vw, 10px));
+    top: clamp(5px, 1vw, 10px); left: clamp(5px, 1vw, 10px); /* Ajustado com clamp */
+    width: clamp(15px, 3vw, 40px); height: clamp(15px, 3vw, 40px); /* Ajustado com clamp */
+    background: repeating-linear-gradient(45deg, transparent, transparent clamp(2px, 0.4vw, 5px), rgba(0,0,0,0.2) clamp(2px, 0.4vw, 5px), rgba(0,0,0,0.2) clamp(4px, 0.8vw, 10px)); /* Ajustado com clamp */
     border-radius: 50%;
 }
 .fruit.melon {
     background: radial-gradient(circle at center, #F0E68C, #DAA520);
-    width: min(4.8vw, 60px); height: min(4.8vw, 60px);
-    min-width: 28px; min-height: 28px;
+    width: clamp(25px, 4.8vw, 60px); height: clamp(25px, 4.8vw, 60px); /* Ajustado com clamp */
     border-radius: 50%;
     position: relative;
     overflow: hidden;
@@ -476,10 +454,9 @@ body { font-size: min(1.2vw, 18px); }
 .fruit.melon::before {
     content: '';
     position: absolute;
-    top: min(0.5vw, 6px); left: min(0.5vw, 6px);
-    width: min(3.8vw, 50px); height: min(3.8vw, 50px);
-    min-width: 25px; min-height: 25px;
-    border: min(0.25em, 3px) solid rgba(255,255,255,0.4);
+    top: clamp(3px, 0.5vw, 6px); left: clamp(3px, 0.5vw, 6px); /* Ajustado com clamp */
+    width: clamp(20px, 3.8vw, 50px); height: clamp(20px, 3.8vw, 50px); /* Ajustado com clamp */
+    border: clamp(1px, 0.25em, 3px) solid rgba(255,255,255,0.4); /* Ajustado com clamp */
     border-radius: 50%;
     box-sizing: border-box;
 }
@@ -491,7 +468,7 @@ body { font-size: min(1.2vw, 18px); }
     background-color: rgba(0, 0, 0, 0.6);
     border-radius: 0.6em;
     font-weight: bold;
-    font-size: 1.1em;
+    font-size: 1.1em; /* Relativo ao font-size do body */
     box-shadow: 0 0 0.6em rgba(0, 0, 0, 0.7);
     z-index: 15;
     display: flex;
@@ -520,7 +497,7 @@ body { font-size: min(1.2vw, 18px); }
     justify-content: center;
     align-items: center;
     color: #fff;
-    font-size: 1.8em;
+    font-size: 1.8em; /* Relativo ao font-size do body */
     text-align: center;
     z-index: 100;
 }
@@ -531,6 +508,7 @@ body { font-size: min(1.2vw, 18px); }
     margin-bottom: 0.6em;
     color: #FF4500;
     text-shadow: 0.2em 0.2em 0.3em rgba(0, 0, 0, 0.8);
+    line-height: 1.2;
 }
 
 #game-over-screen p {
@@ -566,12 +544,12 @@ body { font-size: min(1.2vw, 18px); }
 }
 
 /* --- Estilos de Clima e Hora do Dia --- */
+/* (Os estilos originais do "day" são os padrões, então não precisam de classe explícita) */
 #game-container.afternoon::before { background: linear-gradient(to bottom, #FFA500, #FF8C00); }
 #game-container.afternoon::after {
     background-color: #FF8C00; box-shadow: 0 0 30px #FF8C00;
     top: 12vh; right: 5vw;
-    width: min(6vw, 80px); height: min(6vw, 80px);
-    min-width: 40px; min-height: 40px;
+    width: clamp(40px, 6vw, 80px); height: clamp(40px, 6vw, 80px); /* Ajustado */
 }
 #game-container.afternoon > .grass { background: linear-gradient(to top, #8FBC8F, #556B2F); }
 #game-container.afternoon .tree .leaves { background-color: #3CB371; }
@@ -590,8 +568,7 @@ body { font-size: min(1.2vw, 18px); }
 #game-container.night::after {
     background-color: #F0F8FF; box-shadow: 0 0 40px #F0F8FF;
     top: 5vh; right: 8vw;
-    width: min(5vw, 60px); height: min(5vw, 60px);
-    min-width: 30px; min-height: 30px;
+    width: clamp(30px, 5vw, 60px); height: clamp(30px, 5vw, 60px); /* Ajustado */
     border-radius: 50%;
 }
 #game-container.night > .grass { background: linear-gradient(to top, #2F4F4F, #000000); }
@@ -606,13 +583,14 @@ body { font-size: min(1.2vw, 18px); }
 #game-container.night .stream { background: linear-gradient(to right, #2F4F4F, #483D8B); box-shadow: inset 0 0.2em 0.4em rgba(0,0,0,0.5); }
 #game-container.night .stream::before { background: rgba(255,255,255,0.1); }
 
+/* CLIMA: CHUVA */
 #game-container.rain::before { background: linear-gradient(to bottom, #778899, #696969); }
-#game-container.rain::after { display: none; }
+#game-container.rain::after { display: none; } /* Sol/Lua desaparece */
 #game-container.rain > .grass { background: linear-gradient(to top, #2E8B57, #006400); }
 .raindrop {
     position: absolute;
     width: 2px;
-    height: 15px;
+    height: clamp(8px, 1.5vh, 15px); /* Ajustado para telas menores */
     background-color: #ADD8E6;
     border-radius: 2px;
     opacity: 0.7;
@@ -626,34 +604,84 @@ body { font-size: min(1.2vw, 18px); }
     to { transform: translateY(100vh); opacity: 0; }
 }
 
-#game-container.windy .cloud { animation-duration: 15s !important; }
+/* CLIMA: VENTO */
+#game-container.windy .cloud { animation-duration: 12s !important; transform: translateX(100vw) scaleX(1.2); } /* Mais rápido e um pouco maior */
+#game-container.windy .cloud.small { animation-duration: 10s !important; }
+#game-container.windy .cloud.medium { animation-duration: 13s !important; }
+#game-container.windy .tree { transform: rotateZ(-1deg); } /* Inclina as árvores */
+#game-container.windy .grass { background: linear-gradient(to top, #3CB371, #556B2F); } /* Tom mais esverdeado */
 
+/* CLIMA: NEVE */
+#game-container.snow::before { background: linear-gradient(to bottom, #B0E0E6, #AEC6CF); }
+#game-container.snow::after { background-color: #F8F8FF; box-shadow: 0 0 30px #F8F8FF; } /* Lua ou sol opaco */
+#game-container.snow > .grass { background: linear-gradient(to top, #E0FFFF, #B0C4DE); } /* Gramado com neve */
+#game-container.snow .tree .leaves { background-color: #C0C0C0; } /* Folhas com neve */
+#game-container.snow .tree .leaves::before, #game-container.snow .tree .leaves::after { background-color: #D3D3D3; }
+#game-container.snow .rabbit { background-color: #F0F8FF; } /* Coelho mais branco */
+#game-container.snow .bird { background-color: #A9A9A9; } /* Pássaro mais cinza */
+.snow-flake {
+    position: absolute;
+    background-color: #FFFFFF;
+    border-radius: 50%;
+    opacity: 0.8;
+    z-index: 20;
+    pointer-events: none;
+    animation: snowfall linear infinite;
+}
+.snow-flake.small { width: 3px; height: 3px; animation-duration: 8s; }
+.snow-flake.medium { width: 5px; height: 5px; animation-duration: 10s; }
+.snow-flake.large { width: 7px; height: 7px; animation-duration: 12s; }
+
+@keyframes snowfall {
+    0% { transform: translateY(-10px) translateX(0px); opacity: 0; }
+    50% { opacity: 0.7; }
+    100% { transform: translateY(100vh) translateX(50px); opacity: 0; } /* Pequeno deslocamento lateral */
+}
+
+/* CLIMA: TEMPESTADE */
+#game-container.storm::before { background: linear-gradient(to bottom, #2F4F4F, #1C1C1C); } /* Céu muito escuro */
+#game-container.storm::after { display: none; }
+#game-container.storm > .grass { background: linear-gradient(to top, #1E3131, #0A0A0A); }
+#game-container.storm .cloud { background: #555; box-shadow: 0 0 0.8em rgba(0,0,0,0.5); opacity: 0.9; } /* Nuvens mais escuras */
+#game-container.storm .cloud::before, #game-container.storm .cloud::after { background: #444; }
+#game-container.storm .stream { background: linear-gradient(to right, #223B4C, #1A2833); }
+.lightning {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 50px solid yellow; /* Topo do raio */
+    filter: drop-shadow(0 0 10px yellow) drop-shadow(0 0 20px yellow);
+    animation: lightning-flash 2s infinite steps(1); /* Animação intermitente */
+    z-index: 50;
+    opacity: 0;
+}
+.lightning::before { /* Parte de baixo do raio */
+    content: '';
+    position: absolute;
+    top: 50px; /* Começa onde o topo termina */
+    left: -20px;
+    width: 0;
+    height: 0;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-top: 80px solid yellow;
+}
+
+@keyframes lightning-flash {
+    0%, 100% { opacity: 0; }
+    50% { opacity: 1; } /* Visível por um instante */
+}
 
 /* ---------------------------------------------------- */
 /* --- MEDIA QUERIES PARA RESPONSIVIDADE OTIMIZADA --- */
 /* ---------------------------------------------------- */
 
-@media (min-width: 769px) {
-    #score, #level, #missed-fruits, #timer { font-size: 1.1em; padding: 0.6em 1em; }
-    #score { top: 2vh; left: 2vw; }
-    #level { top: 2vh; left: 15vw; }
-    #missed-fruits { top: 2vh; left: 28vw; }
-    #timer { top: 2vh; right: 2vw; }
+/* Removido o min-width para o media query default */
+/* Font sizes são ajustados no body usando min() e max() */
 
-    .tree { width: min(12vw, 180px); height: min(25vw, 300px); }
-    .rabbit { width: min(5vw, 80px); height: min(3.5vw, 50px); bottom: min(3vw, 40px); }
-    .bird { width: min(4vw, 60px); height: min(2vw, 30px); }
-    .cloud.small { width: min(8vw, 100px); height: min(4vw, 50px); }
-    .cloud.medium { width: min(12vw, 150px); height: min(6vw, 80px); }
-    .stream { height: min(5vw, 60px); }
-    .flower { width: min(2.5vw, 30px); height: min(2.5vw, 30px); }
-}
-
-@media (min-width: 481px) and (max-width: 768px) {
-    #start-screen h1 { font-size: 2.8em; }
-    #start-screen p { font-size: 1em; }
-    #start-button { font-size: 1em; padding: 0.8em 2em; }
-
+@media (max-width: 768px) {
     #score, #level, #missed-fruits, #timer {
         font-size: 0.9em;
         padding: 0.4em 0.8em;
@@ -663,32 +691,24 @@ body { font-size: min(1.2vw, 18px); }
     #missed-fruits { top: 5.5vh; left: 1.5vw; }
     #timer { top: 5.5vh; left: auto; right: 1.5vw; }
 
-    #basket {
-        width: min(18vw, 140px); height: min(10vw, 80px);
-        min-width: 80px; min-height: 50px;
-        bottom: 4vh;
-    }
-    .fruit { width: min(4.5vw, 40px); height: min(4.5vw, 40px); min-width: 30px; min-height: 30px; }
-    .fruit.banana { width: min(6vw, 50px); height: min(3vw, 25px); }
-    .fruit.grapes { width: min(2.5vw, 25px); height: min(2.5vw, 25px); }
-
-    .tree { width: min(18vw, 120px); height: min(30vw, 200px); bottom: 4%; }
-    .rabbit { width: min(7vw, 50px); height: min(4.5vw, 35px); bottom: 3vw; }
-    .bird { width: min(6vw, 40px); height: min(3vw, 20px); }
-    .cloud.small { width: min(10vw, 80px); height: min(5vw, 40px); }
-    .cloud.medium { width: min(15vw, 120px); height: min(7.5vw, 60px); }
-    .stream { height: min(6vw, 50px); }
-    .flower { width: min(3vw, 25px); height: min(3vw, 25px); }
+    /* Ajustes específicos para elementos menores */
+    .tree { width: clamp(60px, 18vw, 120px); height: clamp(100px, 30vw, 200px); bottom: 4%; }
+    .rabbit { width: clamp(30px, 7vw, 50px); height: clamp(20px, 4.5vw, 35px); bottom: 3vw; }
+    .bird { width: clamp(25px, 6vw, 40px); height: clamp(12px, 3vw, 20px); }
+    .cloud.small { width: clamp(50px, 10vw, 80px); height: clamp(25px, 5vw, 40px); }
+    .cloud.medium { width: clamp(80px, 15vw, 120px); height: clamp(40px, 7.5vw, 60px); }
+    .stream { height: clamp(30px, 6vw, 50px); }
+    .flower { width: clamp(12px, 3vw, 25px); height: clamp(12px, 3vw, 25px); }
 }
 
 @media (max-width: 480px) {
-    #start-screen h1 { font-size: 2.2em; }
-    #start-screen p { font-size: 0.9em; }
-    #start-button { font-size: 0.9em; padding: 0.6em 1.5em; }
+    #start-screen h1 { font-size: 2em; }
+    #start-screen p { font-size: 0.8em; }
+    #start-button { font-size: 0.8em; padding: 0.5em 1.2em; }
 
     #score, #level, #missed-fruits, #timer {
-        font-size: 0.8em;
-        padding: 0.3em 0.6em;
+        font-size: 0.7em;
+        padding: 0.2em 0.5em;
     }
     #score { top: 1vh; left: 1vw; }
     #level { top: 1vh; left: auto; right: 1vw; }
@@ -696,28 +716,31 @@ body { font-size: min(1.2vw, 18px); }
     #timer { top: 4.5vh; left: auto; right: 1vw; }
 
     #basket {
-        width: min(25vw, 100px); height: min(14vw, 60px);
-        min-width: 70px; min-height: 45px;
+        width: clamp(60px, 25vw, 100px); height: clamp(35px, 14vw, 60px); /* Ajustado */
         bottom: 3vh;
-        border-width: min(0.3vw, 4px);
+        border-width: clamp(2px, 0.3vw, 4px); /* Ajustado */
     }
-    .fruit { width: min(6vw, 35px); height: min(6vw, 35px); min-width: 25px; min-height: 25px; }
-    .fruit.banana { width: min(8vw, 45px); height: min(4vw, 22px); }
-    .fruit.grapes { width: min(3.5vw, 20px); height: min(3.5vw, 20px); }
+    .fruit { width: clamp(20px, 6vw, 35px); height: clamp(20px, 6vw, 35px); }
+    .fruit.banana { width: clamp(30px, 8vw, 45px); height: clamp(15px, 4vw, 22px); }
+    .fruit.grapes { width: clamp(15px, 3.5vw, 20px); height: clamp(15px, 3.5vw, 20px); }
 
-    .tree { width: min(20vw, 100px); height: min(38vw, 160px); bottom: 2%; }
-    .tree .trunk { width: min(4vw, 20px); height: min(20vw, 80px); }
-    .tree .leaves { width: min(18vw, 90px); height: min(18vw, 90px); bottom: min(12vw, 50px); }
-    .rabbit, .bird, .flower, .cloud, .stream { display: none; }
+    .tree { width: clamp(50px, 20vw, 100px); height: clamp(90px, 38vw, 160px); bottom: 2%; }
+    .tree .trunk { width: clamp(15px, 4vw, 20px); height: clamp(40px, 20vw, 80px); }
+    .tree .leaves { width: clamp(45px, 18vw, 90px); height: clamp(45px, 18vw, 90px); bottom: clamp(30px, 12vw, 50px); }
+    
+    /* Decisões sobre display:none para mobile pequeno: */
+    /* Mantenho alguns elementos principais, mas removo os secundários para simplificar e melhorar performance */
+    .bird, .rabbit, .cloud, .stream { display: none; }
+    #flowers-container .flower { display: none; } /* Esconde flores individuais também */
 }
 
 @media screen and (orientation: landscape) and (max-height: 576px) {
-    #start-screen h1 { font-size: 2.2em; }
-    #start-screen p { font-size: 0.9em; }
-    #start-button { font-size: 0.9em; padding: 0.6em 1.5em; }
+    #start-screen h1 { font-size: 1.8em; }
+    #start-screen p { font-size: 0.8em; }
+    #start-button { font-size: 0.8em; padding: 0.5em 1.2em; }
 
     #score, #level, #missed-fruits, #timer {
-        font-size: 0.8em;
+        font-size: 0.7em;
         padding: 0.2em 0.4em;
     }
     #score { top: 0.5vh; left: 0.5vw; }
@@ -726,16 +749,16 @@ body { font-size: min(1.2vw, 18px); }
     #timer { top: 0.5vh; right: 0.5vw; }
 
     #basket {
-        width: min(15vw, 90px); height: min(8vw, 50px);
-        min-width: 60px; min-height: 40px;
+        width: clamp(50px, 15vw, 90px); height: clamp(30px, 8vw, 50px); /* Ajustado */
         bottom: 1.5vh;
-        border-width: min(0.3vw, 3px);
+        border-width: clamp(2px, 0.3vw, 3px); /* Ajustado */
     }
 
-    .fruit { width: min(3.5vw, 30px); height: min(3.5vw, 30px); min-width: 18px; min-height: 18px; }
-    .fruit.banana { width: min(4vw, 30px); height: min(2vw, 15px); }
-    .fruit.grapes { width: min(1.8vw, 15px); height: min(1.8vw, 15px); }
+    .fruit { width: clamp(15px, 3.5vw, 30px); height: clamp(15px, 3.5vw, 30px); }
+    .fruit.banana { width: clamp(20px, 4vw, 30px); height: clamp(10px, 2vw, 15px); }
+    .fruit.grapes { width: clamp(10px, 1.8vw, 15px); height: clamp(10px, 1.8vw, 15px); }
 
+    /* Em landscape mobile de baixa altura, remover mais elementos para focar no gameplay */
     .tree, .rabbit, .bird, .cloud, .stream, #flowers-container .flower { display: none; }
 }
 
@@ -743,10 +766,8 @@ body { font-size: min(1.2vw, 18px); }
 /* --- Estilos para a Tela Inicial (Start Screen) - Decoração --- */
 .start-decoration {
     position: relative;
-    width: min(80vw, 400px);
-    height: min(40vw, 200px);
-    min-width: 250px;
-    min-height: 120px;
+    width: clamp(200px, 80vw, 400px); /* Ajustado com clamp */
+    height: clamp(100px, 40vw, 200px); /* Ajustado com clamp */
     display: flex;
     justify-content: center;
     align-items: flex-end;
@@ -756,14 +777,12 @@ body { font-size: min(1.2vw, 18px); }
 
 .start-basket {
     position: relative;
-    width: min(15vw, 150px);
-    height: min(8vw, 90px);
-    min-width: 90px;
-    min-height: 50px;
+    width: clamp(70px, 15vw, 150px); /* Ajustado com clamp */
+    height: clamp(40px, 8vw, 90px); /* Ajustado com clamp */
     background-color: #A0522D;
-    border-radius: 0 0 min(7.5vw, 75px) min(7.5vw, 75px);
-    border: min(0.4vw, 5px) solid #654321;
-    box-shadow: inset 0 min(-0.8vw, -10px) min(1.2vw, 15px) rgba(0, 0, 0, 0.4);
+    border-radius: 0 0 clamp(35px, 7.5vw, 75px) clamp(35px, 7.5vw, 75px); /* Ajustado com clamp */
+    border: clamp(3px, 0.4vw, 5px) solid #654321; /* Ajustado com clamp */
+    box-shadow: inset 0 clamp(-5px, -0.8vw, -10px) clamp(8px, 1.2vw, 15px) rgba(0, 0, 0, 0.4); /* Ajustado com clamp */
     background-image: radial-gradient(circle at top, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%);
     z-index: 1;
 }
@@ -780,48 +799,43 @@ body { font-size: min(1.2vw, 18px); }
 
 .start-apple {
     background: radial-gradient(circle at 30% 30%, #FF6347, #FF0000);
-    width: min(4.5vw, 50px); height: min(4.5vw, 50px);
-    min-width: 30px; min-height: 30px;
+    width: clamp(25px, 4.5vw, 50px); height: clamp(25px, 4.5vw, 50px); /* Ajustado com clamp */
     border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-    bottom: min(4vw, 40px); left: 10%;
+    bottom: clamp(20px, 4vw, 40px); left: 10%;
     animation-delay: 0.5s;
 }
 
 .start-banana {
     background: linear-gradient(to right, #FFD700, #DAA520);
-    width: min(6vw, 70px); height: min(3vw, 35px);
-    min-width: 40px; min-height: 20px;
+    width: clamp(30px, 6vw, 70px); height: clamp(15px, 3vw, 35px); /* Ajustado com clamp */
     border-radius: 50% 50% 50% 50% / 30% 70% 30% 70%;
     transform: rotate(20deg);
-    bottom: min(3vw, 30px); left: 30%;
+    bottom: clamp(15px, 3vw, 30px); left: 30%;
     animation-delay: 1s;
 }
 
 .start-grapes {
     background-color: #800080;
-    width: min(2.5vw, 30px); height: min(2.5vw, 30px);
-    min-width: 18px; min-height: 18px;
+    width: clamp(15px, 2.5vw, 30px); height: clamp(15px, 2.5vw, 30px); /* Ajustado com clamp */
     box-shadow: -0.3em -0.3em 0 0 #A020F0, 0.3em 0.3em 0 0 #A020F0, 0 0.3em 0 0 #A020F0, -0.3em 0 0 0 #A020F0, 0 -0.3em 0 0 #A020F0;
     border-radius: 50%;
-    bottom: min(5vw, 50px); right: 20%;
+    bottom: clamp(25px, 5vw, 50px); right: 20%;
     animation-delay: 1.5s;
 }
 
 .start-pear {
     background: linear-gradient(to top, #ADFF2F, #9ACD32);
-    width: min(4vw, 45px); height: min(5.5vw, 60px);
-    min-width: 25px; min-height: 35px;
+    width: clamp(20px, 4vw, 45px); height: clamp(30px, 5.5vw, 60px); /* Ajustado com clamp */
     border-radius: 50% 50% 50% 50% / 70% 70% 30% 30%;
-    bottom: min(2vw, 20px); left: 60%;
+    bottom: clamp(10px, 2vw, 20px); left: 60%;
     animation-delay: 2s;
 }
 
 .start-watermelon {
     background: radial-gradient(circle at center, #32CD32, #228B22);
-    width: min(5.5vw, 65px); height: min(5.5vw, 65px);
-    min-width: 35px; min-height: 35px;
+    width: clamp(30px, 5.5vw, 65px); height: clamp(30px, 5.5vw, 65px); /* Ajustado com clamp */
     border-radius: 50%;
-    bottom: min(1vw, 10px); left: 45%;
+    bottom: clamp(5px, 1vw, 10px); left: 45%;
     animation-delay: 2.5s;
     position: absolute;
     overflow: hidden;
@@ -829,10 +843,9 @@ body { font-size: min(1.2vw, 18px); }
 .start-watermelon::before {
     content: '';
     position: absolute;
-    top: min(1vw, 10px); left: min(1vw, 10px);
-    width: min(3vw, 40px); height: min(3vw, 40px);
-    min-width: 20px; min-height: 20px;
-    background: repeating-linear-gradient(45deg, transparent, transparent min(0.4vw, 5px), rgba(0,0,0,0.2) min(0.4vw, 5px), rgba(0,0,0,0.2) min(0.8vw, 10px));
+    top: clamp(5px, 1vw, 10px); left: clamp(5px, 1vw, 10px); /* Ajustado com clamp */
+    width: clamp(15px, 3vw, 40px); height: clamp(15px, 3vw, 40px); /* Ajustado com clamp */
+    background: repeating-linear-gradient(45deg, transparent, transparent clamp(2px, 0.4vw, 5px), rgba(0,0,0,0.2) clamp(2px, 0.4vw, 5px), rgba(0,0,0,0.2) clamp(4px, 0.8vw, 10px)); /* Ajustado com clamp */
     border-radius: 50%;
 }
 
@@ -843,54 +856,4 @@ body { font-size: min(1.2vw, 18px); }
     100% { transform: rotate(-5deg); }
 }
 
-@media (max-width: 480px) {
-    .start-decoration {
-        width: min(90vw, 300px);
-        height: min(45vw, 150px);
-        min-width: 200px;
-        min-height: 100px;
-        margin-bottom: 1.5em;
-    }
-    .start-basket {
-        width: min(25vw, 120px);
-        height: min(12vw, 70px);
-        min-width: 80px;
-        min-height: 45px;
-        border-width: min(0.3vw, 4px);
-    }
-    .start-fruit {
-        width: min(7vw, 35px); height: min(7vw, 35px);
-        min-width: 20px; min-height: 20px;
-    }
-    .start-apple { bottom: min(6vw, 30px); left: 5%; }
-    .start-banana { width: min(8vw, 40px); height: min(4vw, 20px); bottom: min(5vw, 25px); left: 25%; }
-    .start-grapes { width: min(3vw, 20px); height: min(3vw, 20px); bottom: min(8vw, 40px); right: 10%; }
-    .start-pear { width: min(5vw, 25px); height: min(7vw, 35px); bottom: min(4vw, 20px); left: 55%; }
-    .start-watermelon { width: min(7vw, 35px); height: min(7vw, 35px); bottom: min(2vw, 10px); left: 40%; }
-}
-
-@media screen and (orientation: landscape) and (max-height: 480px) {
-    .start-decoration {
-        width: min(60vw, 350px);
-        height: min(30vh, 100px);
-        min-width: 200px;
-        min-height: 80px;
-        margin-bottom: 1em;
-    }
-    .start-basket {
-        width: min(12vw, 100px);
-        height: min(6vh, 40px);
-        min-width: 70px;
-        min-height: 35px;
-        border-width: min(0.2vw, 3px);
-    }
-    .start-fruit {
-        width: min(3vw, 25px); height: min(3vw, 25px);
-        min-width: 18px; min-height: 18px;
-    }
-    .start-apple { bottom: min(3vh, 20px); left: 8%; }
-    .start-banana { width: min(4vw, 30px); height: min(2vw, 15px); bottom: min(2.5vh, 15px); left: 28%; }
-    .start-grapes { width: min(1.8vw, 15px); height: min(1.8vw, 15px); bottom: min(4vh, 25px); right: 15%; }
-    .start-pear { width: min(2.5vw, 20px); height: min(3.5vw, 28px); bottom: min(1.5vh, 10px); left: 58%; }
-    .start-watermelon { width: min(4vw, 30px); height: min(4vw, 30px); bottom: min(0.5vh, 5px); left: 43%; }
-}
+/* Os media queries para start-decoration já usam clamp, então aprimoram-se automaticamente */
