@@ -18,12 +18,13 @@ html, body {
 }
 
 /* Base de escalonamento responsiva para o jogo inteiro (zoom menor) */
-/* Usando 'rem' para ser relativo ao root font-size, que é ajustado com min()/max() */
 html {
     font-size: 16px; /* Base rem */
 }
+/* Usando min() para garantir que o tamanho da fonte não fique muito grande em telas largas,
+   e max() para que não fique muito pequeno em telas estreitas. */
 body {
-    font-size: min(1.1vw, 16px); /* Geralmente menor em telas maiores */
+    font-size: min(1.1vw, 16px);
 }
 
 @media (max-width: 1200px) { body { font-size: min(1.3vw, 15px); } }
@@ -97,9 +98,15 @@ body {
     overflow: hidden;
     box-shadow: none;
     border-radius: 0;
-    background-color: transparent;
+    background-color: transparent; /* Será preenchido por ::before e .grass */
+    display: flex; /* Para centralizar os elementos internos se necessário */
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end; /* Alinha a cesta na parte inferior */
+    gap: 1em; /* Espaçamento entre os elementos de UI */
 }
 
+/* Céu */
 #game-container::before {
     content: '';
     position: absolute;
@@ -107,19 +114,20 @@ body {
     left: 0;
     width: 100%;
     height: 50%;
-    background: linear-gradient(to bottom, #87CEEB, #6A5ACD);
+    background: linear-gradient(to bottom, #87CEEB, #6A5ACD); /* Cor do dia */
     z-index: 0;
     transition: background 1s ease-in-out;
 }
 
+/* Sol/Lua */
 #game-container::after {
     content: '';
     position: absolute;
     top: 8vh;
     right: 8vw;
-    width: clamp(50px, 8vw, 100px); /* Usando clamp para min/max/ideal */
+    width: clamp(50px, 8vw, 100px);
     height: clamp(50px, 8vw, 100px);
-    background-color: #FFD700;
+    background-color: #FFD700; /* Cor do sol */
     border-radius: 50%;
     box-shadow: 0 0 40px #FFD700;
     z-index: 1;
@@ -140,8 +148,8 @@ body {
 .tree {
     position: absolute;
     bottom: 5%;
-    width: clamp(80px, 12vw, 180px); /* Ajustado com clamp */
-    height: clamp(150px, 25vw, 300px); /* Ajustado com clamp */
+    width: clamp(80px, 12vw, 180px);
+    height: clamp(150px, 25vw, 300px);
     z-index: 1;
     transition: all 1s ease-in-out;
 }
@@ -152,7 +160,7 @@ body {
 .tree .trunk {
     position: absolute;
     bottom: 0;
-    left: calc(50% - clamp(10px, 1.5vw, 20px)); /* Ajustado com clamp */
+    left: calc(50% - clamp(10px, 1.5vw, 20px));
     width: clamp(20px, 3vw, 40px);
     height: clamp(80px, 15vw, 150px);
     background-color: #8B4513;
@@ -163,7 +171,7 @@ body {
 
 .tree .leaves {
     position: absolute;
-    bottom: clamp(60px, 8vw, 120px); /* Ajustado com clamp */
+    bottom: clamp(60px, 8vw, 120px);
     width: clamp(70px, 12vw, 150px);
     height: clamp(70px, 12vw, 150px);
     background-color: #228B22;
@@ -177,7 +185,7 @@ body {
     position: absolute;
     background-color: #3CB371;
     border-radius: 50%;
-    width: clamp(40px, 8vw, 100px); /* Ajustado com clamp */
+    width: clamp(40px, 8vw, 100px);
     height: clamp(40px, 8vw, 100px);
     transition: background-color 1s ease-in-out;
 }
@@ -196,7 +204,7 @@ body {
 }
 .flower {
     position: absolute;
-    width: clamp(10px, 2.5vw, 30px); /* Ajustado com clamp */
+    width: clamp(10px, 2.5vw, 30px);
     height: clamp(10px, 2.5vw, 30px);
     background-color: #FF69B4;
     border-radius: 50%;
@@ -217,7 +225,7 @@ body {
 
 .bird {
     position: absolute;
-    width: clamp(20px, 4vw, 60px); height: clamp(10px, 2vw, 30px); /* Ajustado com clamp */
+    width: clamp(20px, 4vw, 60px); height: clamp(10px, 2vw, 30px);
     background-color: #A0522D;
     border-radius: 50%;
     top: 10%;
@@ -232,7 +240,7 @@ body {
     position: absolute;
     background-color: #654321;
     border-radius: 50% 50% 0 0;
-    width: clamp(12px, 2.5vw, 40px); height: clamp(6px, 1.25vw, 20px); /* Ajustado con clamp */
+    width: clamp(12px, 2.5vw, 40px); height: clamp(6px, 1.25vw, 20px);
     transition: background-color 1s ease-in-out;
 }
 .bird::before { top: -0.8vw; left: 0.5vw; transform: rotate(-20deg); }
@@ -242,17 +250,17 @@ body {
     0% { left: -10vw; top: 10%; transform: scaleX(1); }
     25% { top: 8%; }
     50% { left: 110vw; top: 12%; transform: scaleX(1); }
-    50.1% { transform: scaleX(-1); }
+    50.1% { transform: scaleX(-1); } /* Inverte direção */
     75% { top: 9%; }
     100% { left: -10vw; top: 10%; transform: scaleX(-1); }
 }
 
 .rabbit {
     position: absolute;
-    width: clamp(30px, 5vw, 80px); height: clamp(20px, 3.5vw, 50px); /* Ajustado con clamp */
+    width: clamp(30px, 5vw, 80px); height: clamp(20px, 3.5vw, 50px);
     background-color: #D3D3D3;
     border-radius: 50%;
-    bottom: clamp(20px, 3vw, 40px); /* Ajustado con clamp */
+    bottom: clamp(20px, 3vw, 40px);
     left: 10%;
     z-index: 3;
     animation: hop 20s linear infinite;
@@ -263,7 +271,7 @@ body {
     content: '';
     position: absolute;
     background-color: #D3D3D3;
-    width: clamp(8px, 1.2vw, 20px); height: clamp(15px, 3vw, 40px); /* Ajustado con clamp */
+    width: clamp(8px, 1.2vw, 20px); height: clamp(15px, 3vw, 40px);
     border-radius: 50% 50% 0 0;
     top: -2vw;
     transition: background-color 1s ease-in-out;
@@ -280,7 +288,7 @@ body {
     40% { left: 50%; transform: translateY(0); }
     50% { left: 70%; transform: translateY(-0.5em); }
     60% { left: 90%; transform: translateY(0); }
-    60.1% { transform: scaleX(-1); }
+    60.1% { transform: scaleX(-1); } /* Inverte direção */
     70% { left: 70%; transform: translateY(-0.5em); }
     80% { left: 50%; transform: translateY(0); }
     90% { left: 30%; transform: translateY(-0.5em); }
@@ -299,32 +307,32 @@ body {
 }
 
 .cloud.small {
-    width: clamp(40px, 8vw, 100px); height: clamp(20px, 4vw, 50px); /* Ajustado con clamp */
+    width: clamp(40px, 8vw, 100px); height: clamp(20px, 4vw, 50px);
     animation-duration: 25s;
 }
 .cloud.small::before {
     content: ''; position: absolute; background: #fff; border-radius: 50%;
-    width: clamp(25px, 5vw, 60px); height: clamp(25px, 5vw, 60px); /* Ajustado con clamp */
+    width: clamp(25px, 5vw, 60px); height: clamp(25px, 5vw, 60px);
     top: -1.5vw; left: 0.8vw;
 }
 .cloud.small::after {
     content: ''; position: absolute; background: #fff; border-radius: 50%;
-    width: clamp(30px, 6vw, 70px); height: clamp(30px, 6vw, 70px); /* Ajustado con clamp */
+    width: clamp(30px, 6vw, 70px); height: clamp(30px, 6vw, 70px);
     top: -0.8vw; right: 0.8vw;
 }
 
 .cloud.medium {
-    width: clamp(60px, 12vw, 150px); height: clamp(30px, 6vw, 80px); /* Ajustado con clamp */
+    width: clamp(60px, 12vw, 150px); height: clamp(30px, 6vw, 80px);
     animation-duration: 35s;
 }
 .cloud.medium::before {
     content: ''; position: absolute; background: #fff; border-radius: 50%;
-    width: clamp(35px, 7vw, 90px); height: clamp(35px, 7vw, 90px); /* Ajustado con clamp */
+    width: clamp(35px, 7vw, 90px); height: clamp(35px, 7vw, 90px);
     top: -2.5vw; left: 1.5vw;
 }
 .cloud.medium::after {
     content: ''; position: absolute; background: #fff; border-radius: 50%;
-    width: clamp(40px, 8vw, 100px); height: clamp(40px, 8vw, 100px); /* Ajustado con clamp */
+    width: clamp(40px, 8vw, 100px); height: clamp(40px, 8vw, 100px);
     top: -1.5vw; right: 1.5vw;
 }
 
@@ -338,7 +346,7 @@ body {
     bottom: 48%;
     left: 0;
     width: 100%;
-    height: clamp(20px, 5vw, 60px); /* Ajustado con clamp */
+    height: clamp(20px, 5vw, 60px);
     background: linear-gradient(to right, #4682B4, #6A5ACD);
     border-radius: 0 0 50% 50%;
     z-index: 1;
@@ -350,10 +358,10 @@ body {
 .stream::before {
     content: '';
     position: absolute;
-    top: clamp(5px, 0.8vw, 10px); /* Ajustado con clamp */
+    top: clamp(5px, 0.8vw, 10px);
     left: 0;
     width: 100%;
-    height: clamp(8px, 1.5vw, 20px); /* Ajustado con clamp */
+    height: clamp(8px, 1.5vw, 20px);
     background: rgba(255,255,255,0.3);
     border-radius: 50%;
     filter: blur(0.3em);
@@ -369,14 +377,14 @@ body {
 #basket {
     position: absolute;
     bottom: 3vh;
-    width: clamp(70px, 14vw, 170px); /* Ajustado com clamp */
-    height: clamp(45px, 8vw, 95px); /* Ajustado com clamp */
+    width: clamp(70px, 14vw, 170px);
+    height: clamp(45px, 8vw, 95px);
     background-color: #A0522D;
-    border-radius: 0 0 clamp(35px, 7vw, 85px) clamp(35px, 7vw, 85px); /* Ajustado com clamp */
-    border: clamp(2px, 0.5vw, 6px) solid #654321; /* Ajustado com clamp */
-    box-shadow: inset 0 clamp(-5px, -1vw, -12px) clamp(8px, 1.5vw, 18px) rgba(0, 0, 0, 0.4); /* Ajustado com clamp */
+    border-radius: 0 0 clamp(35px, 7vw, 85px) clamp(35px, 7vw, 85px);
+    border: clamp(2px, 0.5vw, 6px) solid #654321;
+    box-shadow: inset 0 clamp(-5px, -1vw, -12px) clamp(8px, 1.5vw, 18px) rgba(0, 0, 0, 0.4);
     z-index: 10;
-    transition: transform 0.05s linear; /* Ajuste para mais ou menos suavidade */
+    /* transition: transform 0.05s linear; (Removido para permitir requestAnimationFrame para suavidade) */
     background-image: radial-gradient(circle at top, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%);
 
     /* Centraliza a cesta e permite que transform: translateX mova a partir do centro */
@@ -387,20 +395,21 @@ body {
 /* Frutas (animação de queda via CSS) */
 .fruit {
     position: absolute;
-    width: clamp(20px, 4vw, 50px); height: clamp(20px, 4vw, 50px); /* Ajustado com clamp */
+    width: clamp(20px, 4vw, 50px); height: clamp(20px, 4vw, 50px);
     border-radius: 50%;
-    top: -60px;
+    top: -60px; /* Começa acima da tela */
     z-index: 5;
     box-shadow: 0.15em 0.15em 0.3em rgba(0, 0, 0, 0.3);
     background-size: cover;
     background-position: center;
     border: 0.1em solid rgba(0,0,0,0.1);
     animation: fallFruit var(--fall-duration) linear forwards;
+    /* 'forwards' mantém o estado final da animação, importante para a detecção de queda */
 }
 
 @keyframes fallFruit {
     from { transform: translateY(0); }
-    to { transform: translateY(calc(100vh + 100px)); }
+    to { transform: translateY(calc(100vh + 100px)); } /* Cai bem abaixo da tela */
 }
 
 .fruit.apple {
@@ -409,29 +418,29 @@ body {
 }
 .fruit.banana {
     background: linear-gradient(to right, #FFD700, #DAA520);
-    width: clamp(30px, 5.5vw, 70px); height: clamp(15px, 2.5vw, 35px); /* Ajustado com clamp */
+    width: clamp(30px, 5.5vw, 70px); height: clamp(15px, 2.5vw, 35px);
     border-radius: 50% 50% 50% 50% / 30% 70% 30% 70%;
     transform: rotate(20deg);
 }
 .fruit.grapes {
     background-color: #800080;
-    width: clamp(10px, 2.2vw, 30px); height: clamp(10px, 2.2vw, 30px); /* Ajustado com clamp */
+    width: clamp(10px, 2.2vw, 30px); height: clamp(10px, 2.2vw, 30px);
     box-shadow: -0.4em -0.4em 0 0 #A020F0, 0.4em 0.4em 0 0 #A020F0, 0 0.4em 0 0 #A020F0, -0.4em 0 0 0 #A020F0, 0 -0.4em 0 0 #A020F0;
     border-radius: 50%;
 }
 .fruit.pear {
     background: linear-gradient(to top, #ADFF2F, #9ACD32);
-    width: clamp(15px, 3.5vw, 45px); height: clamp(25px, 5vw, 60px); /* Ajustado com clamp */
+    width: clamp(15px, 3.5vw, 45px); height: clamp(25px, 5vw, 60px);
     border-radius: 50% 50% 50% 50% / 70% 70% 30% 30%;
 }
 .fruit.papaya {
     background: radial-gradient(circle at center, #FFDAB9, #FF8C00);
-    width: clamp(20px, 4.5vw, 60px); height: clamp(30px, 6.5vw, 80px); /* Ajustado com clamp */
+    width: clamp(20px, 4.5vw, 60px); height: clamp(30px, 6.5vw, 80px);
     border-radius: 50% 50% 50% 50% / 70% 70% 30% 30%;
 }
 .fruit.watermelon {
     background: radial-gradient(circle at center, #32CD32, #228B22);
-    width: clamp(25px, 5vw, 65px); height: clamp(25px, 5vw, 65px); /* Ajustado com clamp */
+    width: clamp(25px, 5vw, 65px); height: clamp(25px, 5vw, 65px);
     border-radius: 50%;
     position: relative;
     overflow: hidden;
@@ -439,14 +448,14 @@ body {
 .fruit.watermelon::before {
     content: '';
     position: absolute;
-    top: clamp(5px, 1vw, 10px); left: clamp(5px, 1vw, 10px); /* Ajustado com clamp */
-    width: clamp(15px, 3vw, 40px); height: clamp(15px, 3vw, 40px); /* Ajustado com clamp */
-    background: repeating-linear-gradient(45deg, transparent, transparent clamp(2px, 0.4vw, 5px), rgba(0,0,0,0.2) clamp(2px, 0.4vw, 5px), rgba(0,0,0,0.2) clamp(4px, 0.8vw, 10px)); /* Ajustado com clamp */
+    top: clamp(5px, 1vw, 10px); left: clamp(5px, 1vw, 10px);
+    width: clamp(15px, 3vw, 40px); height: clamp(15px, 3vw, 40px);
+    background: repeating-linear-gradient(45deg, transparent, transparent clamp(2px, 0.4vw, 5px), rgba(0,0,0,0.2) clamp(2px, 0.4vw, 5px), rgba(0,0,0,0.2) clamp(4px, 0.8vw, 10px));
     border-radius: 50%;
 }
 .fruit.melon {
     background: radial-gradient(circle at center, #F0E68C, #DAA520);
-    width: clamp(25px, 4.8vw, 60px); height: clamp(25px, 4.8vw, 60px); /* Ajustado com clamp */
+    width: clamp(25px, 4.8vw, 60px); height: clamp(25px, 4.8vw, 60px);
     border-radius: 50%;
     position: relative;
     overflow: hidden;
@@ -454,9 +463,9 @@ body {
 .fruit.melon::before {
     content: '';
     position: absolute;
-    top: clamp(3px, 0.5vw, 6px); left: clamp(3px, 0.5vw, 6px); /* Ajustado com clamp */
-    width: clamp(20px, 3.8vw, 50px); height: clamp(20px, 3.8vw, 50px); /* Ajustado com clamp */
-    border: clamp(1px, 0.25em, 3px) solid rgba(255,255,255,0.4); /* Ajustado com clamp */
+    top: clamp(3px, 0.5vw, 6px); left: clamp(3px, 0.5vw, 6px);
+    width: clamp(20px, 3.8vw, 50px); height: clamp(20px, 3.8vw, 50px);
+    border: clamp(1px, 0.25em, 3px) solid rgba(255,255,255,0.4);
     border-radius: 50%;
     box-sizing: border-box;
 }
@@ -549,7 +558,7 @@ body {
 #game-container.afternoon::after {
     background-color: #FF8C00; box-shadow: 0 0 30px #FF8C00;
     top: 12vh; right: 5vw;
-    width: clamp(40px, 6vw, 80px); height: clamp(40px, 6vw, 80px); /* Ajustado */
+    width: clamp(40px, 6vw, 80px); height: clamp(40px, 6vw, 80px);
 }
 #game-container.afternoon > .grass { background: linear-gradient(to top, #8FBC8F, #556B2F); }
 #game-container.afternoon .tree .leaves { background-color: #3CB371; }
@@ -568,7 +577,7 @@ body {
 #game-container.night::after {
     background-color: #F0F8FF; box-shadow: 0 0 40px #F0F8FF;
     top: 5vh; right: 8vw;
-    width: clamp(30px, 5vw, 60px); height: clamp(30px, 5vw, 60px); /* Ajustado */
+    width: clamp(30px, 5vw, 60px); height: clamp(30px, 5vw, 60px);
     border-radius: 50%;
 }
 #game-container.night > .grass { background: linear-gradient(to top, #2F4F4F, #000000); }
@@ -590,35 +599,35 @@ body {
 .raindrop {
     position: absolute;
     width: 2px;
-    height: clamp(8px, 1.5vh, 15px); /* Ajustado para telas menores */
+    height: clamp(8px, 1.5vh, 15px);
     background-color: #ADD8E6;
     border-radius: 2px;
     opacity: 0.7;
     z-index: 20;
     pointer-events: none;
-    animation: fall 1s linear infinite;
+    animation: fallRain 1s linear infinite; /* Nome de animação específico para chuva */
 }
 
-@keyframes fall {
+@keyframes fallRain {
     from { transform: translateY(-20px); opacity: 0.8; }
     to { transform: translateY(100vh); opacity: 0; }
 }
 
 /* CLIMA: VENTO */
-#game-container.windy .cloud { animation-duration: 12s !important; transform: translateX(100vw) scaleX(1.2); } /* Mais rápido e um pouco maior */
+#game-container.windy .cloud { animation-duration: 12s !important; transform: translateX(100vw) scaleX(1.2); }
 #game-container.windy .cloud.small { animation-duration: 10s !important; }
 #game-container.windy .cloud.medium { animation-duration: 13s !important; }
 #game-container.windy .tree { transform: rotateZ(-1deg); } /* Inclina as árvores */
-#game-container.windy .grass { background: linear-gradient(to top, #3CB371, #556B2F); } /* Tom mais esverdeado */
+#game-container.windy .grass { background: linear-gradient(to top, #3CB371, #556B2F); }
 
 /* CLIMA: NEVE */
 #game-container.snow::before { background: linear-gradient(to bottom, #B0E0E6, #AEC6CF); }
-#game-container.snow::after { background-color: #F8F8FF; box-shadow: 0 0 30px #F8F8FF; } /* Lua ou sol opaco */
-#game-container.snow > .grass { background: linear-gradient(to top, #E0FFFF, #B0C4DE); } /* Gramado com neve */
-#game-container.snow .tree .leaves { background-color: #C0C0C0; } /* Folhas com neve */
+#game-container.snow::after { background-color: #F8F8FF; box-shadow: 0 0 30px #F8F8FF; }
+#game-container.snow > .grass { background: linear-gradient(to top, #E0FFFF, #B0C4DE); }
+#game-container.snow .tree .leaves { background-color: #C0C0C0; }
 #game-container.snow .tree .leaves::before, #game-container.snow .tree .leaves::after { background-color: #D3D3D3; }
-#game-container.snow .rabbit { background-color: #F0F8FF; } /* Coelho mais branco */
-#game-container.snow .bird { background-color: #A9A9A9; } /* Pássaro mais cinza */
+#game-container.snow .rabbit { background-color: #F0F8FF; }
+#game-container.snow .bird { background-color: #A9A9A9; }
 .snow-flake {
     position: absolute;
     background-color: #FFFFFF;
@@ -635,14 +644,14 @@ body {
 @keyframes snowfall {
     0% { transform: translateY(-10px) translateX(0px); opacity: 0; }
     50% { opacity: 0.7; }
-    100% { transform: translateY(100vh) translateX(50px); opacity: 0; } /* Pequeno deslocamento lateral */
+    100% { transform: translateY(100vh) translateX(50px); opacity: 0; }
 }
 
 /* CLIMA: TEMPESTADE */
-#game-container.storm::before { background: linear-gradient(to bottom, #2F4F4F, #1C1C1C); } /* Céu muito escuro */
+#game-container.storm::before { background: linear-gradient(to bottom, #2F4F4F, #1C1C1C); }
 #game-container.storm::after { display: none; }
 #game-container.storm > .grass { background: linear-gradient(to top, #1E3131, #0A0A0A); }
-#game-container.storm .cloud { background: #555; box-shadow: 0 0 0.8em rgba(0,0,0,0.5); opacity: 0.9; } /* Nuvens mais escuras */
+#game-container.storm .cloud { background: #555; box-shadow: 0 0 0.8em rgba(0,0,0,0.5); opacity: 0.9; }
 #game-container.storm .cloud::before, #game-container.storm .cloud::after { background: #444; }
 #game-container.storm .stream { background: linear-gradient(to right, #223B4C, #1A2833); }
 .lightning {
@@ -651,16 +660,16 @@ body {
     height: 0;
     border-left: 5px solid transparent;
     border-right: 5px solid transparent;
-    border-top: 50px solid yellow; /* Topo do raio */
+    border-top: 50px solid yellow;
     filter: drop-shadow(0 0 10px yellow) drop-shadow(0 0 20px yellow);
-    animation: lightning-flash 2s infinite steps(1); /* Animação intermitente */
+    animation: lightning-flash 0.3s forwards; /* Animação mais curta e para de piscar depois de 1 vez */
     z-index: 50;
     opacity: 0;
 }
-.lightning::before { /* Parte de baixo do raio */
+.lightning::before {
     content: '';
     position: absolute;
-    top: 50px; /* Começa onde o topo termina */
+    top: 50px;
     left: -20px;
     width: 0;
     height: 0;
@@ -670,16 +679,15 @@ body {
 }
 
 @keyframes lightning-flash {
-    0%, 100% { opacity: 0; }
-    50% { opacity: 1; } /* Visível por um instante */
+    0% { opacity: 0; }
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { opacity: 0; }
 }
 
 /* ---------------------------------------------------- */
 /* --- MEDIA QUERIES PARA RESPONSIVIDADE OTIMIZADA --- */
 /* ---------------------------------------------------- */
-
-/* Removido o min-width para o media query default */
-/* Font sizes são ajustados no body usando min() e max() */
 
 @media (max-width: 768px) {
     #score, #level, #missed-fruits, #timer {
@@ -691,7 +699,6 @@ body {
     #missed-fruits { top: 5.5vh; left: 1.5vw; }
     #timer { top: 5.5vh; left: auto; right: 1.5vw; }
 
-    /* Ajustes específicos para elementos menores */
     .tree { width: clamp(60px, 18vw, 120px); height: clamp(100px, 30vw, 200px); bottom: 4%; }
     .rabbit { width: clamp(30px, 7vw, 50px); height: clamp(20px, 4.5vw, 35px); bottom: 3vw; }
     .bird { width: clamp(25px, 6vw, 40px); height: clamp(12px, 3vw, 20px); }
@@ -716,9 +723,9 @@ body {
     #timer { top: 4.5vh; left: auto; right: 1vw; }
 
     #basket {
-        width: clamp(60px, 25vw, 100px); height: clamp(35px, 14vw, 60px); /* Ajustado */
+        width: clamp(60px, 25vw, 100px); height: clamp(35px, 14vw, 60px);
         bottom: 3vh;
-        border-width: clamp(2px, 0.3vw, 4px); /* Ajustado */
+        border-width: clamp(2px, 0.3vw, 4px);
     }
     .fruit { width: clamp(20px, 6vw, 35px); height: clamp(20px, 6vw, 35px); }
     .fruit.banana { width: clamp(30px, 8vw, 45px); height: clamp(15px, 4vw, 22px); }
@@ -731,7 +738,7 @@ body {
     /* Decisões sobre display:none para mobile pequeno: */
     /* Mantenho alguns elementos principais, mas removo os secundários para simplificar e melhorar performance */
     .bird, .rabbit, .cloud, .stream { display: none; }
-    #flowers-container .flower { display: none; } /* Esconde flores individuais também */
+    #flowers-container .flower { display: none; }
 }
 
 @media screen and (orientation: landscape) and (max-height: 576px) {
@@ -749,9 +756,9 @@ body {
     #timer { top: 0.5vh; right: 0.5vw; }
 
     #basket {
-        width: clamp(50px, 15vw, 90px); height: clamp(30px, 8vw, 50px); /* Ajustado */
+        width: clamp(50px, 15vw, 90px); height: clamp(30px, 8vw, 50px);
         bottom: 1.5vh;
-        border-width: clamp(2px, 0.3vw, 3px); /* Ajustado */
+        border-width: clamp(2px, 0.3vw, 3px);
     }
 
     .fruit { width: clamp(15px, 3.5vw, 30px); height: clamp(15px, 3.5vw, 30px); }
@@ -766,8 +773,8 @@ body {
 /* --- Estilos para a Tela Inicial (Start Screen) - Decoração --- */
 .start-decoration {
     position: relative;
-    width: clamp(200px, 80vw, 400px); /* Ajustado com clamp */
-    height: clamp(100px, 40vw, 200px); /* Ajustado com clamp */
+    width: clamp(200px, 80vw, 400px);
+    height: clamp(100px, 40vw, 200px);
     display: flex;
     justify-content: center;
     align-items: flex-end;
@@ -777,12 +784,12 @@ body {
 
 .start-basket {
     position: relative;
-    width: clamp(70px, 15vw, 150px); /* Ajustado com clamp */
-    height: clamp(40px, 8vw, 90px); /* Ajustado com clamp */
+    width: clamp(70px, 15vw, 150px);
+    height: clamp(40px, 8vw, 90px);
     background-color: #A0522D;
-    border-radius: 0 0 clamp(35px, 7.5vw, 75px) clamp(35px, 7.5vw, 75px); /* Ajustado com clamp */
-    border: clamp(3px, 0.4vw, 5px) solid #654321; /* Ajustado com clamp */
-    box-shadow: inset 0 clamp(-5px, -0.8vw, -10px) clamp(8px, 1.2vw, 15px) rgba(0, 0, 0, 0.4); /* Ajustado com clamp */
+    border-radius: 0 0 clamp(35px, 7.5vw, 75px) clamp(35px, 7.5vw, 75px);
+    border: clamp(3px, 0.4vw, 5px) solid #654321;
+    box-shadow: inset 0 clamp(-5px, -0.8vw, -10px) clamp(8px, 1.2vw, 15px) rgba(0, 0, 0, 0.4);
     background-image: radial-gradient(circle at top, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%);
     z-index: 1;
 }
@@ -799,7 +806,7 @@ body {
 
 .start-apple {
     background: radial-gradient(circle at 30% 30%, #FF6347, #FF0000);
-    width: clamp(25px, 4.5vw, 50px); height: clamp(25px, 4.5vw, 50px); /* Ajustado com clamp */
+    width: clamp(25px, 4.5vw, 50px); height: clamp(25px, 4.5vw, 50px);
     border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
     bottom: clamp(20px, 4vw, 40px); left: 10%;
     animation-delay: 0.5s;
@@ -807,7 +814,7 @@ body {
 
 .start-banana {
     background: linear-gradient(to right, #FFD700, #DAA520);
-    width: clamp(30px, 6vw, 70px); height: clamp(15px, 3vw, 35px); /* Ajustado com clamp */
+    width: clamp(30px, 6vw, 70px); height: clamp(15px, 3vw, 35px);
     border-radius: 50% 50% 50% 50% / 30% 70% 30% 70%;
     transform: rotate(20deg);
     bottom: clamp(15px, 3vw, 30px); left: 30%;
@@ -816,7 +823,7 @@ body {
 
 .start-grapes {
     background-color: #800080;
-    width: clamp(15px, 2.5vw, 30px); height: clamp(15px, 2.5vw, 30px); /* Ajustado com clamp */
+    width: clamp(15px, 2.5vw, 30px); height: clamp(15px, 2.5vw, 30px);
     box-shadow: -0.3em -0.3em 0 0 #A020F0, 0.3em 0.3em 0 0 #A020F0, 0 0.3em 0 0 #A020F0, -0.3em 0 0 0 #A020F0, 0 -0.3em 0 0 #A020F0;
     border-radius: 50%;
     bottom: clamp(25px, 5vw, 50px); right: 20%;
@@ -825,7 +832,7 @@ body {
 
 .start-pear {
     background: linear-gradient(to top, #ADFF2F, #9ACD32);
-    width: clamp(20px, 4vw, 45px); height: clamp(30px, 5.5vw, 60px); /* Ajustado com clamp */
+    width: clamp(20px, 4vw, 45px); height: clamp(30px, 5.5vw, 60px);
     border-radius: 50% 50% 50% 50% / 70% 70% 30% 30%;
     bottom: clamp(10px, 2vw, 20px); left: 60%;
     animation-delay: 2s;
@@ -833,7 +840,7 @@ body {
 
 .start-watermelon {
     background: radial-gradient(circle at center, #32CD32, #228B22);
-    width: clamp(30px, 5.5vw, 65px); height: clamp(30px, 5.5vw, 65px); /* Ajustado com clamp */
+    width: clamp(30px, 5.5vw, 65px); height: clamp(30px, 5.5vw, 65px);
     border-radius: 50%;
     bottom: clamp(5px, 1vw, 10px); left: 45%;
     animation-delay: 2.5s;
@@ -843,17 +850,14 @@ body {
 .start-watermelon::before {
     content: '';
     position: absolute;
-    top: clamp(5px, 1vw, 10px); left: clamp(5px, 1vw, 10px); /* Ajustado com clamp */
-    width: clamp(15px, 3vw, 40px); height: clamp(15px, 3vw, 40px); /* Ajustado com clamp */
-    background: repeating-linear-gradient(45deg, transparent, transparent clamp(2px, 0.4vw, 5px), rgba(0,0,0,0.2) clamp(2px, 0.4vw, 5px), rgba(0,0,0,0.2) clamp(4px, 0.8vw, 10px)); /* Ajustado com clamp */
+    top: clamp(5px, 1vw, 10px); left: clamp(5px, 1vw, 10px);
+    width: clamp(15px, 3vw, 40px); height: clamp(15px, 3vw, 40px);
+    background: repeating-linear-gradient(45deg, transparent, transparent clamp(2px, 0.4vw, 5px), rgba(0,0,0,0.2) clamp(2px, 0.4vw, 5px), rgba(0,0,0,0.2) clamp(4px, 0.8vw, 10px));
     border-radius: 50%;
 }
-
 
 @keyframes swing {
     0% { transform: rotate(-5deg); }
     50% { transform: rotate(5deg); }
     100% { transform: rotate(-5deg); }
 }
-
-/* Os media queries para start-decoration já usam clamp, então aprimoram-se automaticamente */

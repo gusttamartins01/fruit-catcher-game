@@ -13,7 +13,7 @@ const flowersContainer = document.getElementById('flowers-container');
 
 // Elementos decorativos que agora estão no HTML
 const treeLeft = document.querySelector('.tree-left');
-const treeRight = document.querySelector('.tree-right');
+const treeRight = document.querySelector('.tree.right'); // Correção aqui, se houver um erro de classe no HTML
 const bird1 = document.querySelector('.bird-1');
 const bird2 = document.querySelector('.bird-2');
 const bird3 = document.querySelector('.bird-3');
@@ -31,9 +31,9 @@ let fruitSpeed = 1.5; // Velocidade inicial mais lenta (agora usada para calcula
 let fruitsCaught = 0;
 let missedFruits = 0;
 const MAX_MISSED_FRUITS = 10;
-let gameInterval; // Intervalo para criar frutas
+let gameInterval; // Intervalo para criar frutas (será o timeout para 'manageFruitDrops')
 let gameTimerInterval; // Intervalo para o tempo de jogo
-let fruitDropDelay = 1000; // Intervalo inicial um pouco mais rápido para cair uma fruta (em ms)
+let fruitDropDelay = 1000; // Intervalo inicial para cair uma "onda" de frutas (em ms)
 let gameTime = 0; // Tempo de jogo em segundos
 let isGameOver = false;
 let weatherInterval;
@@ -43,10 +43,12 @@ let currentWeather = 'day'; // Estado inicial do clima
 let fruitsToDrop = 1; // Quantidade inicial de frutas a cair por "onda" (começa com 1)
 let currentFruitDropCount = 0; // Contador de frutas na onda atual
 let fruitDropTimeout; // Timeout para a queda gradual
-let basketX = 0; // Posição X da cesta (para controle via mouse/touch)
-// NOTA: Para mouse/touch, BASKET_MOVE_SPEED não é diretamente usado para o movimento da cesta,
-// mas sim a posição do ponteiro/toque.
-let activeKeys = {}; // Mantido caso queira reintroduzir teclado facilmente, mas não usado aqui.
+
+// Variáveis para controle de movimento da cesta
+let basketX = 0; // Posição X da cesta (para controle via mouse/touch/teclado)
+const BASKET_MOVE_SPEED_KEYBOARD = 5; // Velocidade de movimento da cesta pelo teclado (em pixels por frame)
+let keyboardMoveDirection = 0; // -1 para esquerda, 1 para direita, 0 para parado
+let isDesktop = false; // Flag para determinar se é desktop (e usar teclado)
 
 const fruitTypes = [
     { name: 'apple' },
@@ -57,6 +59,14 @@ const fruitTypes = [
     { name: 'watermelon' },
     { name: 'melon' }
 ];
+
+// --- Funções Auxiliares ---
+
+// Função para detectar se o dispositivo é desktop
+function detectDevice() {
+    // Se 'ontouchstart' não estiver presente no window E a tela for maior que um tablet (768px), é provável que seja um desktop.
+    isDesktop = !('ontouchstart' in window) && window.matchMedia("(min-width: 768px)").matches;
+}
 
 // --- Funções de Inicialização e Reinício ---
 function initializeGame() {
@@ -71,7 +81,9 @@ function initializeGame() {
     fruitsToDrop = 1; // Resetar para 1 fruta no início
     currentFruitDropCount = 0;
     currentWeather = 'day'; // Resetar clima para dia
-    basketX = 0; // Resetar posição da cesta
+    
+    // Resetar posição da cesta no centro
+    basketX = 0;
     basket.style.setProperty('--basket-x', `${basketX}px`);
 
     scoreDisplay.textContent = `Pontos: ${score}`;
@@ -80,7 +92,7 @@ function initializeGame() {
     timerDisplay.textContent = `Tempo: ${gameTime}s`;
 
     gameOverScreen.classList.add('hidden');
-    startScreen.classList.add('hidden');
+    startScreen.classList.add('hidden'); // Esconde a tela inicial ao iniciar o jogo
     gameContainer.classList.remove('hidden');
 
     // Limpa todas as frutas existentes
@@ -98,41 +110,110 @@ function initializeGame() {
     startGame();
 }
 
-// --- Movimento da Cesta (Exclusivamente Mouse/Touch) ---
-function moveBasket(clientX) {
-    if (isGameOver || !startScreen.classList.contains('hidden')) return;
+// --- Movimento da Cesta (Exclusivamente Teclado para Desktop, Mouse/Touch para Mobile) ---
+let animationFrameId = null; // Para controlar o requestAnimationFrame
+
+function updateBasketPosition() {
+    // A cesta deve se mover APENAS se o jogo NÃO estiver acabado E se a tela inicial ESTIVER OCULTA
+    if (isGameOver || !startScreen.classList.contains('hidden')) { // Se o jogo acabou OU a tela inicial está visível, para o loop.
+        animationFrameId = null; // Para o loop de animação
+        return;
+    }
 
     const gameRect = gameContainer.getBoundingClientRect();
     const basketWidth = basket.offsetWidth;
 
-    // Calcula a posição X da cesta baseada na posição do mouse/touch.
-    // O centro da cesta seguirá o ponteiro do mouse/toque.
-    let newX = clientX - gameRect.left - (gameRect.width / 2); // Posição relativa ao centro do gameContainer
-    
-    // Limita o movimento para que a cesta não saia da tela
-    // maxBasketX é a distância máxima que o centro da cesta pode ir da borda do gameContainer
+    // Calcula os limites de movimento da cesta
+    // maxBasketX é a distância máxima do centro do gameContainer que a cesta pode ir
     const maxBasketX = (gameRect.width / 2) - (basketWidth / 2);
-    if (newX < -maxBasketX) {
-        newX = -maxBasketX;
+
+    let newX = basketX;
+
+    if (isDesktop) {
+        // Movimento pelo teclado
+        newX = basketX + (keyboardMoveDirection * BASKET_MOVE_SPEED_KEYBOARD);
+
+        // Limita o movimento para que a cesta não saia da tela
+        if (newX < -maxBasketX) {
+            newX = -maxBasketX;
+        }
+        if (newX > maxBasketX) {
+            newX = maxBasketX;
+        }
+        basketX = newX;
+    } else {
+        // Movimento por mouse/touch (para dispositivos não-desktop)
+        // A lógica de mouse/touchmove já atualiza basketX diretamente,
+        // aqui apenas garantimos que o valor esteja dentro dos limites.
+        if (basketX < -maxBasketX) {
+            basketX = -maxBasketX;
+        }
+        if (basketX > maxBasketX) {
+            basketX = maxBasketX;
+        }
     }
-    if (newX > maxBasketX) {
-        newX = maxBasketX;
-    }
-    basketX = newX;
+
     basket.style.setProperty('--basket-x', `${basketX}px`);
+    animationFrameId = requestAnimationFrame(updateBasketPosition);
 }
 
-// Eventos de Input (Mouse e Touch)
+// Eventos de Input
+// Listener de mousemove e touchmove só para dispositivos não-desktop
 document.addEventListener('mousemove', (e) => {
-    moveBasket(e.clientX);
+    // Apenas permite movimento se NÃO for desktop, o jogo NÃO estiver acabado E a tela inicial ESTIVER OCULTA
+    if (!isDesktop && !isGameOver && startScreen.classList.contains('hidden')) {
+        const gameRect = gameContainer.getBoundingClientRect();
+        const basketWidth = basket.offsetWidth;
+        // Calcula a posição do mouse em relação ao centro do container
+        let newX = e.clientX - gameRect.left - (gameRect.width / 2);
+        const maxBasketX = (gameRect.width / 2) - (basketWidth / 2);
+
+        // Limita o movimento para que a cesta não saia da tela
+        if (newX < -maxBasketX) newX = -maxBasketX;
+        if (newX > maxBasketX) newX = maxBasketX;
+
+        basketX = newX; // Atualiza basketX diretamente
+    }
 });
 
 document.addEventListener('touchmove', (e) => {
     e.preventDefault(); // Evita o scroll da página ao mover o dedo
-    if (e.touches.length > 0) {
-        moveBasket(e.touches[0].clientX);
+    // Apenas permite movimento se NÃO for desktop, houver toques, o jogo NÃO estiver acabado E a tela inicial ESTIVER OCULTA
+    if (!isDesktop && e.touches.length > 0 && !isGameOver && startScreen.classList.contains('hidden')) {
+        const gameRect = gameContainer.getBoundingClientRect();
+        const basketWidth = basket.offsetWidth;
+        // Calcula a posição do toque em relação ao centro do container
+        let newX = e.touches[0].clientX - gameRect.left - (gameRect.width / 2);
+        const maxBasketX = (gameRect.width / 2) - (basketWidth / 2);
+
+        // Limita o movimento para que a cesta não saia da tela
+        if (newX < -maxBasketX) newX = -maxBasketX;
+        if (newX > maxBasketX) newX = maxBasketX;
+
+        basketX = newX; // Atualiza basketX diretamente
     }
-}, { passive: false }); // Usar { passive: false } se precisar de preventDefault
+}, { passive: false });
+
+
+document.addEventListener('keydown', (e) => {
+    // Apenas permite controle de teclado se for desktop, o jogo NÃO estiver acabado E a tela inicial ESTIVER OCULTA
+    if (isDesktop && !isGameOver && startScreen.classList.contains('hidden')) {
+        if (e.key === 'ArrowLeft') { // Apenas seta esquerda
+            keyboardMoveDirection = -1;
+        } else if (e.key === 'ArrowRight') { // Apenas seta direita
+            keyboardMoveDirection = 1;
+        }
+    }
+});
+
+document.addEventListener('keyup', (e) => {
+    // Para o movimento quando a tecla de seta é solta no desktop, se o jogo NÃO estiver acabado E a tela inicial ESTIVER OCULTA
+    if (isDesktop && !isGameOver && startScreen.classList.contains('hidden')) {
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+            keyboardMoveDirection = 0; // Para o movimento
+        }
+    }
+});
 
 
 // --- Criação de Frutas (Agora com Animação CSS e Colisão Ajustada) ---
@@ -145,20 +226,17 @@ function createFruit() {
     const fruit = document.createElement('div');
     fruit.classList.add('fruit', fruitData.name);
 
-    // Adiciona temporariamente ao DOM para obter as dimensões reais da fruta
-    // Isso é crucial para posicionar corretamente e evitar que ela nasça fora da tela.
-    gameContainer.appendChild(fruit);
-    const fruitWidth = fruit.offsetWidth;
-    fruit.remove(); // Remove para adicionar novamente com a posição correta
+    gameContainer.appendChild(fruit); // Adiciona ao DOM para obter as dimensões
 
-    // Calcula a posição inicial da fruta para que ela caia sempre dentro da largura visível
-    // e com uma pequena margem para a cesta poder alcançá-la completamente.
+    const fruitWidth = fruit.offsetWidth;
+    
+    // Calcula a posição inicial da fruta
     const gameRectWidth = gameContainer.offsetWidth;
-    const padding = 10; // Margem para a fruta não "sumir" nas bordas
+    const padding = 10; 
     const minLeft = padding;
     const maxLeft = gameRectWidth - fruitWidth - padding;
     
-    // Garante que minLeft e maxLeft sejam válidos (evita bugs em telas muito pequenas)
+    // Garante que minLeft e maxLeft sejam válidos
     if (maxLeft <= minLeft) {
         fruit.style.left = `${minLeft}px`;
     } else {
@@ -166,41 +244,8 @@ function createFruit() {
     }
 
     // Calcula a duração da animação (velocidade de queda)
-    // Maior fruitSpeed -> menor animationDuration (cai mais rápido)
     const animationDuration = (gameContainer.offsetHeight / (fruitSpeed * 100)) + 's';
     fruit.style.setProperty('--fall-duration', animationDuration);
-
-    // Adiciona a fruta ao gameContainer para iniciar a animação
-    gameContainer.appendChild(fruit);
-
-    // Loop de verificação de colisão contínuo para esta fruta
-    function checkFruitCollisionLoop() {
-        // Se o jogo acabou ou a fruta já foi removida (ex: pega pela cesta), encerra este loop
-        if (isGameOver || !fruit.parentNode) {
-            return;
-        }
-
-        // Verifica a colisão entre a fruta e a cesta
-        if (checkCollision(fruit, basket)) {
-            score += 1;
-            fruitsCaught++;
-            scoreDisplay.textContent = `Pontos: ${score}`;
-            fruit.remove(); // Remove a fruta ao ser pega
-            checkLevelUp(); // Verifica se é hora de subir de nível
-            return; // Encerra o loop de colisão para esta fruta, pois ela foi pega
-        }
-
-        // Se a fruta ainda está dentro dos limites verticais da área de jogo, continua verificando
-        const fruitRect = fruit.getBoundingClientRect();
-        // A colisão precisa ser verificada enquanto a fruta estiver acima da parte inferior da tela
-        if (fruitRect.top < gameContainer.offsetHeight) {
-            requestAnimationFrame(checkFruitCollisionLoop);
-        }
-        // Se fruitRect.top já for maior ou igual a gameContainer.offsetHeight,
-        // significa que a fruta saiu da tela por baixo, e o evento 'animationend'
-        // se encarregará de contá-la como "perdida" e removê-la.
-    }
-    requestAnimationFrame(checkFruitCollisionLoop); // Inicia o loop de colisão para esta fruta
 
     // Listener para quando a animação CSS de queda termina (fruta atinge o chão)
     fruit.addEventListener('animationend', () => {
@@ -213,22 +258,44 @@ function createFruit() {
                 endGame();
             }
         }
-    });
+    }, { once: true }); // Executa o listener apenas uma vez
+
+    // Função de verificação de colisão via requestAnimationFrame
+    function checkFruitCollision() {
+        if (isGameOver || !fruit.parentNode) { // Se o jogo acabou ou a fruta já foi removida
+            return;
+        }
+
+        const fruitRect = fruit.getBoundingClientRect();
+        const basketRect = basket.getBoundingClientRect();
+
+        // Verifica a colisão
+        if (
+            fruitRect.bottom >= basketRect.top &&
+            fruitRect.top <= basketRect.bottom &&
+            fruitRect.right >= basketRect.left &&
+            fruitRect.left <= basketRect.right
+        ) {
+            score += 1;
+            fruitsCaught++;
+            scoreDisplay.textContent = `Pontos: ${score}`;
+            fruit.remove(); // Remove a fruta ao ser pega
+            checkLevelUp();
+            return; // Sai da função, não precisa mais verificar esta fruta
+        }
+
+        // Se a fruta ainda está visível e não colidiu, continua a verificação
+        if (fruitRect.top < gameContainer.offsetHeight) {
+            requestAnimationFrame(checkFruitCollision);
+        }
+    }
+    requestAnimationFrame(checkFruitCollision); // Inicia a verificação de colisão para a fruta
 }
 
 
-// --- Checagem de Colisão ---
-function checkCollision(fruit, basket) {
-    const fruitRect = fruit.getBoundingClientRect();
-    const basketRect = basket.getBoundingClientRect();
+// --- Checagem de Colisão (não muda, mas é chamada de forma diferente agora) ---
+// A função checkCollision foi incorporada diretamente em createFruit para otimização
 
-    return (
-        fruitRect.bottom >= basketRect.top &&
-        fruitRect.top <= basketRect.bottom &&
-        fruitRect.right >= basketRect.left &&
-        fruitRect.left <= basketRect.right
-    );
-}
 
 // --- Aumento de Nível e Dificuldade ---
 function checkLevelUp() {
@@ -239,18 +306,18 @@ function checkLevelUp() {
 
         // Aumenta a quantidade de frutas a cair por "onda" de forma mais gradual
         if (fruitsToDrop < 5) { // Limita o máximo de frutas por onda para 5
-            fruitsToDrop = 1 + Math.floor((level - 1) / 2); // Ex: Nv1=1, Nv2-3=2, Nv4-5=3, Nv6-7=4, Nv8+=5
-            if (fruitsToDrop > 5) fruitsToDrop = 5; // Garante o limite máximo
+            fruitsToDrop = 1 + Math.floor((level - 1) / 2);
+            if (fruitsToDrop > 5) fruitsToDrop = 5;
             console.log(`Nível ${level}: Agora caem ${fruitsToDrop} frutas por onda!`);
         }
     }
 }
 
-// Função para aumentar a dificuldade a cada 10 segundos
+// Função para aumentar a dificuldade a cada X segundos
 function increaseDifficultyByTime() {
-    fruitSpeed += 0.1; // Aumenta a velocidade de queda
+    fruitSpeed += 0.15; // Aumenta a velocidade de queda um pouco mais
     // Reduz o delay entre as ondas de frutas
-    if (fruitDropDelay > 400) { // Limita o mínimo de atraso para 400ms
+    if (fruitDropDelay > 300) { // Limita o mínimo de atraso para 300ms (para não ficar impossível)
         fruitDropDelay -= 50;
     }
     console.log(`Dificuldade aumentada pelo tempo: Velocidade=${fruitSpeed.toFixed(2)}, Atraso=${fruitDropDelay}ms`);
@@ -284,8 +351,10 @@ function startGame() {
     clearInterval(gameTimerInterval);
     clearTimeout(fruitDropTimeout);
     clearInterval(weatherInterval);
+    cancelAnimationFrame(animationFrameId); // Cancela o loop de animação da cesta
 
-    // REMOVIDO: requestAnimationFrame(updateBasketPosition); // Não é mais necessário para controle de teclado
+    // Inicia o loop de animação da cesta
+    animationFrameId = requestAnimationFrame(updateBasketPosition);
 
     // Inicia a queda de frutas
     manageFruitDrops();
@@ -297,8 +366,8 @@ function startGame() {
         gameTime++;
         timerDisplay.textContent = `Tempo: ${gameTime}s`;
 
-        // Aumenta a dificuldade a cada 10 segundos
-        if (gameTime - lastDifficultyIncreaseTime >= 10) {
+        // Aumenta a dificuldade a cada 6 segundos
+        if (gameTime - lastDifficultyIncreaseTime >= 6) {
             increaseDifficultyByTime();
             lastDifficultyIncreaseTime = gameTime;
         }
@@ -315,28 +384,28 @@ function startGame() {
         gameContainer.className = ''; // Remove todas as classes de clima atuais
         let newWeather = 'day';
 
-        // Lógica de transição de clima baseada no tempo de jogo (cada fase dura 20 segundos)
-        if (gameTime >= 20 && gameTime < 40) {
+        // Lógica de transição de clima baseada no tempo de jogo (cada fase dura 20 segundos, exceto o ciclo principal)
+        const cycleDuration = 140; // Duração total de um ciclo de clima (7 * 20s)
+        const currentCycleTime = gameTime % cycleDuration;
+
+        if (currentCycleTime >= 20 && currentCycleTime < 40) {
             newWeather = 'afternoon';
-        } else if (gameTime >= 40 && gameTime < 60) {
+        } else if (currentCycleTime >= 40 && currentCycleTime < 60) {
             newWeather = 'night';
-        } else if (gameTime >= 60 && gameTime < 80) {
+        } else if (currentCycleTime >= 60 && currentCycleTime < 80) {
             newWeather = 'rain';
             addRain();
-        } else if (gameTime >= 80 && gameTime < 100) {
+        } else if (currentCycleTime >= 80 && currentCycleTime < 100) {
             newWeather = 'windy';
-        } else if (gameTime >= 100 && gameTime < 120) {
+        } else if (currentCycleTime >= 100 && currentCycleTime < 120) {
             newWeather = 'snow';
             addSnow();
-        } else if (gameTime >= 120 && gameTime < 140) {
+        } else if (currentCycleTime >= 120) { // storm até o final do ciclo
             newWeather = 'storm';
             addRain(); // Chuva na tempestade
             addLightning();
         } else {
-            // Volta para o dia e reinicia o ciclo de clima e tempo
-            newWeather = 'day';
-            gameTime = 0; // Reinicia o tempo de jogo para recomeçar o ciclo de climas
-            lastDifficultyIncreaseTime = 0; // Reinicia o contador de dificuldade baseada no tempo
+            newWeather = 'day'; // Padrão
         }
 
         // Aplica a nova classe de clima apenas se for diferente da atual
@@ -355,6 +424,8 @@ function endGame() {
     clearInterval(gameTimerInterval);
     clearTimeout(fruitDropTimeout);
     clearInterval(weatherInterval); // Limpa o intervalo de clima
+    cancelAnimationFrame(animationFrameId); // Cancela o loop de animação da cesta
+
     document.querySelectorAll('.fruit').forEach(fruit => fruit.remove()); // Remove frutas restantes
     removeWeatherEffects(); // Garante que todos os efeitos de clima sejam removidos
 
@@ -364,21 +435,18 @@ function endGame() {
 
 // --- Configura e posiciona elementos decorativos (chamado apenas uma vez no início ou reinício) ---
 function setupDecorativeElements() {
-    // Remover flores antigas antes de gerar novas
-    flowersContainer.innerHTML = '';
+    flowersContainer.innerHTML = ''; // Remover flores antigas
 
     // Posiciona flores aleatoriamente
     for (let i = 0; i < 12; i++) {
         const flower = document.createElement('div');
         flower.classList.add('flower');
-        // Usar '%' para posicionamento mais responsivo
-        flower.style.left = `${Math.random() * 95}%`; // Evita que saia da tela
-        flower.style.bottom = `${2 + Math.random() * 10}%`; // Para ficarem no gramado
+        flower.style.left = `${Math.random() * 95}%`;
+        flower.style.bottom = `${2 + Math.random() * 10}%`;
         flowersContainer.appendChild(flower);
     }
 
     // Nuvens: Apenas posiciona randomicamente a cada início, se desejar.
-    // As animações já cuidam do movimento.
     cloud1.style.top = `${Math.random() * 20 + 5}%`;
     cloud1.style.animationDelay = `${Math.random() * 10}s`;
     cloud2.style.top = `${Math.random() * 20 + 15}%`;
@@ -386,22 +454,23 @@ function setupDecorativeElements() {
     cloud3.style.top = `${Math.random() * 20 + 10}%`;
     cloud3.style.animationDelay = `${Math.random() * 10}s`;
 
-    // Resetar posições de elementos que podem ter sido escondidos por media queries mobile, etc.
-    // Ou garantir que eles estejam visíveis se o display:none foi aplicado via JS em alguma lógica
+    // Garante que elementos decorativos estejam visíveis se o display:none foi aplicado via JS por media queries
     [treeLeft, treeRight, bird1, bird2, bird3, rabbit1, rabbit2, cloud1, cloud2, cloud3, stream, grass].forEach(el => {
-        if (el) el.style.display = ''; // Remove qualquer display:none inline que possa ter sido aplicado
-        el.style.animationPlayState = 'running'; // Garante que as animações estejam rodando
+        if (el) {
+            el.style.display = '';
+            el.style.animationPlayState = 'running';
+        }
     });
 }
 
 
 // --- Funções para adicionar e remover efeitos de clima ---
-let lightningTimeout; // Variável para controlar o timeout dos raios
+let lightningTimeout;
 function removeWeatherEffects() {
     document.querySelectorAll('.raindrop').forEach(drop => drop.remove());
     document.querySelectorAll('.snow-flake').forEach(flake => flake.remove());
     document.querySelectorAll('.lightning').forEach(light => light.remove());
-    clearTimeout(lightningTimeout); // Limpa o timeout de raios para parar a geração
+    clearTimeout(lightningTimeout);
 }
 
 function addRain() {
@@ -432,21 +501,23 @@ function addSnow() {
 
 function addLightning() {
     function createLightningStrike() {
+        if (currentWeather !== 'storm' || isGameOver) { // Para de criar se o clima mudar ou jogo acabar
+            return;
+        }
         const lightning = document.createElement('div');
         lightning.classList.add('lightning');
-        // Posição aleatória na parte superior da tela
         lightning.style.left = `${10 + Math.random() * 80}vw`;
-        lightning.style.top = `${Math.random() * 20}vh`; // Mais alto para ser visível
+        lightning.style.top = `${Math.random() * 20}vh`;
         gameContainer.appendChild(lightning);
 
+        // Remover o raio após a animação (0.3s)
         setTimeout(() => {
             lightning.remove();
-        }, 500); // Remove o raio rapidamente
+        }, 300);
     }
 
     // Cria raios intermitentemente
     function strikeLoop() {
-        // Continua criando raios apenas se o clima atual for 'storm' e o jogo não estiver acabado
         if (currentWeather === 'storm' && !isGameOver) {
             createLightningStrike();
             lightningTimeout = setTimeout(strikeLoop, 1000 + Math.random() * 3000); // Intervalo de 1 a 4 segundos
@@ -459,17 +530,29 @@ function addLightning() {
 startButton.addEventListener('click', initializeGame);
 restartButton.addEventListener('click', initializeGame);
 
-// Chamar initializeGame() para configurar a tela inicial corretamente no carregamento
+// Chamar detectDevice e initializeGame no carregamento da página
 document.addEventListener('DOMContentLoaded', () => {
-    // Esconde o game container no início, a tela inicial já está visível por padrão
-    gameContainer.classList.add('hidden');
-    startScreen.classList.remove('hidden');
-});
+    detectDevice(); // Detecta o tipo de dispositivo uma vez no carregamento
+    gameContainer.classList.add('hidden'); // Garante que o container do jogo está oculto
+    startScreen.classList.remove('hidden'); // Garante que a tela inicial está visível
 
-// Define a posição inicial da cesta no carregamento, centralizada
-document.addEventListener('DOMContentLoaded', () => {
-    // A cesta é centralizada automaticamente pelo CSS com transform,
-    // mas garantimos que a variável --basket-x esteja em 0
+    // Define a posição inicial da cesta, centralizada
     basketX = 0;
     basket.style.setProperty('--basket-x', `${basketX}px`);
+});
+
+// Listener para redimensionamento da janela para reajustar basketX (caso mude orientação/tamanho)
+window.addEventListener('resize', () => {
+    // Reajusta a cesta apenas se o jogo NÃO estiver acabado e a tela inicial estiver OCULTA (jogo em andamento)
+    if (!isGameOver && startScreen.classList.contains('hidden')) {
+        const gameRect = gameContainer.getBoundingClientRect();
+        const basketWidth = basket.offsetWidth;
+        const maxBasketX = (gameRect.width / 2) - (basketWidth / 2);
+
+        // Garante que basketX não exceda os novos limites
+        if (basketX < -maxBasketX) basketX = -maxBasketX;
+        if (basketX > maxBasketX) basketX = maxBasketX;
+
+        basket.style.setProperty('--basket-x', `${basketX}px`);
+    }
 });
